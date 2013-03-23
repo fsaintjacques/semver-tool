@@ -1,0 +1,204 @@
+#!/usr/bin/env bash
+
+# exit on error
+set -e
+# exit on unbound variable in scope
+set -u
+
+SEMVER_REGEX="^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$"
+SEMVER_REGEX_BASH="^([0-9]*)\.([0-9]*)\.([0-9]*)(\-[0-9A-Za-z-]+)?(\+[0-9A-Za-z-]+)?$"
+
+PROG="semver"
+PROG_VERSION=0.3.0
+
+VERSION_FILE=.version
+DEFAULT_VERSION=0.1.0
+
+USAGE="\
+Usage:
+  $PROG
+  $PROG init [<version>]
+  $PROG bump [(major|minor|patch|prerel <prerel>|meta <meta>) | --force <version>]
+  $PROG compare <version> [<oldversion>]
+  $PROG --help
+  $PROG --version
+
+Arguments:
+  <version>  A version must match the following regex pattern:
+             \"${SEMVER_REGEX}\".
+             In english, the version must match X.Y.Z(-PRERELEASE)(+METADATA)
+             where X, Y and Z are positive integers, PRERELEASE is an optionnal
+             string composed of alphanumeric characters and hyphens and
+             METADATA is also an optional string composed of alphanumeric
+             characters and hyphens.
+
+  <oldversion>  See <version> definition.
+
+  <prerel>  String that must be composed of alphanumeric characters and hyphens.
+
+  <meta>  String that must be composed of alphanumeric characters and hyphens.
+
+Options:
+  -f, --force=<version>  Forces a bump of any version without checking if it
+                         respects semver bumping rules.
+  -v, --version          Print the version of this tool.
+  -h, --help             Print this help message.
+
+Commands:
+  init     initialize this project's version.
+  bump     this project's version by one of major, minor or patch or a forced
+           potentialy conflicting version.
+  compare  <version> to this project's version or to provided <oldversion>."
+
+
+function warning {
+  echo -e "$1" >&2
+}
+
+function error {
+  echo -e "$1" >&2
+  exit 1
+}
+
+function usage-help {
+  error "$USAGE"
+}
+
+function usage-version {
+  echo -e "${PROG}: $MY_VERSION"
+  exit 0
+}
+
+function validate-version {
+  VERSION=$1
+  if [[ "$VERSION" =~ $SEMVER_REGEX_BASH ]]; then
+    if [ "$#" -eq "2" ]; then
+      MAJOR=${BASH_REMATCH[1]}
+      MINOR=${BASH_REMATCH[2]}
+      PATCH=${BASH_REMATCH[3]}
+      PRERE=${BASH_REMATCH[4]}
+      META=${BASH_REMATCH[5]}
+      echo "$2=(\"$MAJOR\" \"$MINOR\" \"$PATCH\" \"$PRERE\" \"$META\")"
+    else
+      echo "$VERSION"
+    fi
+  else
+    error "version $VERSION does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+METADATA)'. See help for more information."
+  fi
+}
+
+function get-version {
+  if [ -e $1 ]; then
+    validate-version "$(cat $1)"
+  else
+    error "Version file $1 not found, you may want to initialize this project with 'version init'"
+  fi
+}
+
+function compare-version {
+  eval $(validate-version "$1" V)
+  eval $(validate-version "$2" V_)
+
+  # MAJOR, MINOR and PATCH should compare numericaly
+  for i in 0 1 2; do
+    case $((${V[$i]} - ${V_[$i]})) in
+      0) ;;
+      -[0-9]*) echo -1; return 0;;
+      [0-9]*) echo 1; return 0 ;;
+    esac
+  done
+
+  # PREREL should compare with the ascii order.
+  if [[ "${V[3]}" > "${V_[3]}" ]]; then
+    echo 1; return 0;
+  elif [[ "${V[3]}" < "${V_[3]}" ]]; then
+    echo -1; return 0;
+  fi
+
+  echo 0
+}
+
+function cli-print {
+  get-version $VERSION_FILE
+  exit 0
+}
+
+function command-init {
+  case $# in
+    0) VERSION="$DEFAULT_VERSION" ;;
+    1) VERSION=$(validate-version "$1") ;;
+    2) usage-help;;
+  esac
+
+  if [ -e "$VERSION_FILE" ]; then
+    error "version file $VERSION_FILE exists, cannot initialize project.  Either remove the current file or use 'version bump --force <newversion>'."
+  fi
+
+  echo "$VERSION" | tee "$VERSION_FILE"
+  exit 0
+}
+
+function command-bump {
+  VERSION=$(get-version $VERSION_FILE)
+  eval $(validate-version $VERSION split)
+  MAJOR=${split[0]}
+  MINOR=${split[1]}
+  PATCH=${split[2]}
+  PRERE=${split[3]}
+  META=${split[4]}
+  case $1 in
+    major) NEW="$(($MAJOR + 1)).0.0" ;;
+    minor) NEW="${MAJOR}.$(($MINOR + 1)).0";;
+    patch) NEW="${MAJOR}.${MINOR}.$(($PATCH+ 1))";;
+    prerel)
+      if [ $# -ne 2 ]; then
+        usage-help
+      else
+        NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}-${2}")
+      fi ;;
+    meta)
+      if [ $# -ne 2 ]; then
+        usage-help
+      else
+        NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}${PRERE}+${2}")
+      fi ;;
+    --force|-f)
+      if [ $# -ne 2 ]; then
+        usage-help
+      else
+        NEW=$(validate-version $2)
+        warning "Version bumping forced to $NEW"
+      fi ;;
+    *) usage-help ;;
+  esac
+
+  echo $NEW | tee $VERSION_FILE
+  exit 0
+}
+
+function command-compare {
+  VERSION=$(get-version $VERSION_FILE)
+
+  case $# in
+    0) usage-help ;;
+    1) V=$(validate-version "$1"); V_=$VERSION ;;
+    2) V=$(validate-version "$1"); V_=$(validate-version "$2") ;;
+  esac
+
+  COMP=$(compare-version "$V" "$V_")
+  echo "$COMP"
+  exit 0
+}
+
+case $# in
+  0) cli-print ;;
+esac
+
+case $1 in
+  --help|-h) echo -e "$USAGE"; exit 0;;
+  --version|-v) usage-version ;;
+  init) shift; command-init $@;;
+  bump) shift; command-bump $@;;
+  compare) shift; command-compare $@;;
+  *) echo "Unknown arguments: $@"; usage-help;;
+esac
