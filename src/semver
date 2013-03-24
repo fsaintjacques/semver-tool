@@ -9,7 +9,7 @@ SEMVER_REGEX="^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$"
 SEMVER_REGEX_BASH="^([0-9]*)\.([0-9]*)\.([0-9]*)(\-[0-9A-Za-z-]+)?(\+[0-9A-Za-z-]+)?$"
 
 PROG="semver"
-PROG_VERSION=0.3.1
+PROG_VERSION=0.4.0
 
 VERSION_FILE=.version
 DEFAULT_VERSION=0.1.0
@@ -18,7 +18,7 @@ USAGE="\
 Usage:
   $PROG
   $PROG init [<version>]
-  $PROG bump [(major|minor|patch|prerel <prerel>|meta <meta>) | --force <version>]
+  $PROG bump [(major|minor|patch|prerel <prerel>|meta <meta>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
   $PROG --help
   $PROG --version
@@ -41,6 +41,8 @@ Arguments:
 Options:
   -f, --force=<version>  Forces a bump of any version without checking if it
                          respects semver bumping rules.
+  -p, --pretend          Do not overwrite the project's version file, only
+                         output what the new version string would be.
   -v, --version          Print the version of this tool.
   -h, --help             Print this help message.
 
@@ -88,11 +90,16 @@ function validate-version {
 }
 
 function get-version {
-  if [ -e $1 ]; then
-    validate-version "$(cat $1)"
-  else
-    error "Version file $1 not found, you may want to initialize this project with 'version init'"
-  fi
+  while [ -w . ]; do
+    if [ -e .version ]; then
+      validate-version "$(cat .version)"
+      return 0
+    fi
+
+    pushd .. > /dev/null
+  done
+
+  error "Version file .version not found, you may want to initialize this project with 'version init'"
 }
 
 function compare-version {
@@ -119,7 +126,7 @@ function compare-version {
 }
 
 function cli-print {
-  get-version $VERSION_FILE
+  get-version
   exit 0
 }
 
@@ -139,45 +146,56 @@ function command-init {
 }
 
 function command-bump {
-  VERSION=$(get-version $VERSION_FILE)
+  VERSION=$(get-version)
   eval $(validate-version $VERSION split)
+  PRETEND=0
   MAJOR=${split[0]}
   MINOR=${split[1]}
   PATCH=${split[2]}
   PRERE=${split[3]}
   META=${split[4]}
-  case $1 in
-    major) NEW="$(($MAJOR + 1)).0.0" ;;
-    minor) NEW="${MAJOR}.$(($MINOR + 1)).0";;
-    patch) NEW="${MAJOR}.${MINOR}.$(($PATCH+ 1))";;
-    prerel)
-      if [ $# -ne 2 ]; then
-        usage-help
-      else
-        NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}-${2}")
-      fi ;;
-    meta)
-      if [ $# -ne 2 ]; then
-        usage-help
-      else
-        NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}${PRERE}+${2}")
-      fi ;;
-    --force|-f)
-      if [ $# -ne 2 ]; then
-        usage-help
-      else
-        NEW=$(validate-version $2)
-        warning "Version bumping forced to $NEW"
-      fi ;;
-    *) usage-help ;;
-  esac
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      major) NEW="$(($MAJOR + 1)).0.0"; shift ;;
+      minor) NEW="${MAJOR}.$(($MINOR + 1)).0"; shift ;;
+      patch) NEW="${MAJOR}.${MINOR}.$(($PATCH+ 1))"; shift ;;
+      prerel)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}-${2}")
+          shift 2
+        fi ;;
+      meta)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}${PRERE}+${2}")
+          shift 2
+        fi ;;
+      --force|-f)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          NEW=$(validate-version "$2")
+          shift 2
+        fi ;;
+      --pretend|-p) PRETEND=1; shift ;;
+      "") break;;
+      *) usage-help ;;
+    esac
+  done
 
-  echo $NEW | tee $VERSION_FILE
+  if [[ "$PRETEND" -eq 1 ]]; then
+    echo $NEW
+  else
+    echo $NEW | tee $VERSION_FILE
+  fi
   exit 0
 }
 
 function command-compare {
-  VERSION=$(get-version $VERSION_FILE)
+  VERSION=$(get-version)
 
   case $# in
     0) usage-help ;;
