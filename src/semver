@@ -124,7 +124,7 @@ function compare-version {
 }
 
 function cli-print {
-  get-version $VERSION_FILE
+  get-version
   exit 0
 }
 
@@ -144,7 +144,7 @@ function command-init {
 }
 
 function command-bump {
-  VERSION=$(get-version $VERSION_FILE)
+  VERSION=$(get-version)
   eval $(validate-version $VERSION split)
   MAJOR=${split[0]}
   MINOR=${split[1]}
@@ -182,7 +182,7 @@ function command-bump {
 }
 
 function command-compare {
-  VERSION=$(get-version $VERSION_FILE)
+  VERSION=$(get-version)
 
   case $# in
     0) usage-help ;;
