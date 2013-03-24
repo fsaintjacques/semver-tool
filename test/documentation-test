@@ -6,8 +6,8 @@ if [ -e .version ]; then
   rm .version
 fi
 
-RESULT=$(cat ../README.md| grep '^> \$ semver' | sed -e 's#> \$ semver##' | xargs -L1 ../src/semver)
-EXPECT=$(cat ../README.md| grep '^>' |grep -v '^> \$ semver' | sed -e 's#^> ##')
+RESULT=$(cat ../README.md| grep '^> \$ semver' | sed -e 's#    \$ semver##' | xargs -L1 ../src/semver)
+EXPECT=$(cat ../README.md| grep '^>' |grep -v '^    \$ semver' | sed -e 's#^> ##')
 
 if [[ "$RESULT" != "$EXPECT" ]]; then
   exit 1
