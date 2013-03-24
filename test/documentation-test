@@ -7,7 +7,7 @@ if [ -e .version ]; then
 fi
 
 RESULT=$(cat ../README.md| grep '^    \$ semver' | sed -e 's#    \$ #../src/#' | xargs -L1 bash)
-EXPECT=$(cat ../README.md| grep '^    ' |grep -v '^    \$ semver' | sed -e 's#^    ##')
+EXPECT=$(cat ../README.md| grep '^    [^a-zA-Z$ ]' |grep -v '^    \$ semver' | sed -e 's#^    ##')
 
 if [[ "$RESULT" != "$EXPECT" ]]; then
   exit 1
