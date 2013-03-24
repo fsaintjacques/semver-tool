@@ -88,11 +88,16 @@ function validate-version {
 }
 
 function get-version {
-  if [ -e $1 ]; then
-    validate-version "$(cat $1)"
-  else
-    error "Version file $1 not found, you may want to initialize this project with 'version init'"
-  fi
+  while [ -w . ]; do
+    if [ -e .version ]; then
+      validate-version "$(cat .version)"
+      return 0
+    fi
+
+    pushd .. > /dev/null
+  done
+
+  error "Version file .version not found, you may want to initialize this project with 'version init'"
 }
 
 function compare-version {
