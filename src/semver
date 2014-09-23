@@ -91,15 +91,15 @@ function validate-version {
 
 function get-version {
   while [ -w . ]; do
-    if [ -e .version ]; then
-      validate-version "$(cat .version)"
+    if [ -e $VERSION_FILE ]; then
+      validate-version "$(cat $VERSION_FILE)"
       return 0
     fi
 
     pushd .. > /dev/null
   done
 
-  error "Version file .version not found, you may want to initialize this project with 'version init'"
+  error "Version file $VERSION_FILE not found, you may want to initialize this project with 'version init'"
 }
 
 function compare-version {
