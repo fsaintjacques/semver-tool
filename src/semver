@@ -5,7 +5,7 @@ set -o errexit -o nounset -o pipefail
 SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
 
 PROG=semver
-PROG_VERSION=0.4.3
+PROG_VERSION=1.0.0
 
 VERSION_FILE=.version
 DEFAULT_VERSION=0.1.0
