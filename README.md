@@ -70,20 +70,20 @@ Basic operations
     1.0.0
     $ semver bump patch
     1.0.1
-    $ semver bump prerel rc1
-    1.0.1-rc1
-    $ semver bump build build051
-    1.0.1-rc1+build051
+    $ semver bump prerel rc1.1.0
+    1.0.1-rc1.1.0
+    $ semver bump build build.051
+    1.0.1-rc1.1.0+build.051
 
 Comparing version for scripting
 
     $ semver compare 1.0.1
     -1
-    $ semver compare 1.0.1-rc1
+    $ semver compare 1.0.1-rc1.1.0
     0
-    $ semver compare 1.0.1-rc1+build052
+    $ semver compare 1.0.1-rc1.1.0+build.052
     0
-    $ semver compare 1.0.1-rb1
+    $ semver compare 1.0.1-rb1.1.0
     -1
     $ semver compare 10.1.4-rc4 10.4.2-rc1
     -1

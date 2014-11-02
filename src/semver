@@ -2,8 +2,7 @@
 
 set -o errexit -o nounset -o pipefail
 
-SEMVER_REGEX="^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$"
-SEMVER_REGEX_BASH="^([0-9]*)\.([0-9]*)\.([0-9]*)(\-[0-9A-Za-z-]+)?(\+[0-9A-Za-z-]+)?$"
+SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
 
 PROG=semver
 PROG_VERSION=0.4.3
@@ -70,7 +69,7 @@ function usage-version {
 
 function validate-version {
   local version=$1
-  if [[ "$version" =~ $SEMVER_REGEX_BASH ]]; then
+  if [[ "$version" =~ $SEMVER_REGEX ]]; then
     # if a second argument is passed, store the result in var named by $2
     if [ "$#" -eq "2" ]; then
       local major=${BASH_REMATCH[1]}
