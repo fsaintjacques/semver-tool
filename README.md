@@ -26,7 +26,7 @@ usage
 
     Arguments:
       <version>  A version must match the following regex pattern:
-                 "^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$".
+                 "^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$".
                  In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
                  where X, Y and Z are positive integers, PRERELEASE is an optionnal
                  string composed of alphanumeric characters and hyphens and
