@@ -19,7 +19,7 @@ usage
     Usage:
       semver
       semver init [<version>]
-      semver bump [(major|minor|patch|prerel <prerel>|meta <meta>) | --force <version>] [--pretend]
+      semver bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
       semver compare <version> [<oldversion>]
       semver --help
       semver --version
@@ -27,17 +27,17 @@ usage
     Arguments:
       <version>  A version must match the following regex pattern:
                  "^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$".
-                 In english, the version must match X.Y.Z(-PRERELEASE)(+METADATA)
+                 In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
                  where X, Y and Z are positive integers, PRERELEASE is an optionnal
                  string composed of alphanumeric characters and hyphens and
-                 METADATA is also an optional string composed of alphanumeric
+                 BUILD is also an optional string composed of alphanumeric
                  characters and hyphens.
 
       <oldversion>  See <version> definition.
 
       <prerel>  String that must be composed of alphanumeric characters and hyphens.
 
-      <meta>  String that must be composed of alphanumeric characters and hyphens.
+      <build>   String that must be composed of alphanumeric characters and hyphens.
 
     Options:
       -f, --force=<version>  Forces a bump of any version without checking if it
@@ -49,7 +49,7 @@ usage
 
     Commands:
       init     initialize this project's version.
-      bump     this project's version by one of major, minor, patch, prerel, meta
+      bump     this project's version by one of major, minor, patch, prerel, build
                or a forced potentialy conflicting version.
       compare  <version> to this project's version or to provided <oldversion>.
 
@@ -72,7 +72,7 @@ Basic operations
     1.0.1
     $ semver bump prerel rc1
     1.0.1-rc1
-    $ semver bump meta build051
+    $ semver bump build build051
     1.0.1-rc1+build051
 
 Comparing version for scripting
@@ -102,7 +102,7 @@ Advanced operations
     1.0.1-rc2
     $ semver
     1.0.1-rc2
-    $ semver bump -f 1.2.3-rc2+meta -p
-    1.2.3-rc2+meta
+    $ semver bump -f 1.2.3-rc2+build -p
+    1.2.3-rc2+build
     $ semver
     1.0.1-rc2

@@ -15,7 +15,7 @@ USAGE="\
 Usage:
   $PROG
   $PROG init [<version>]
-  $PROG bump [(major|minor|patch|prerel <prerel>|meta <meta>) | --force <version>] [--pretend]
+  $PROG bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
   $PROG --help
   $PROG --version
@@ -23,17 +23,17 @@ Usage:
 Arguments:
   <version>  A version must match the following regex pattern:
              \"${SEMVER_REGEX}\".
-             In english, the version must match X.Y.Z(-PRERELEASE)(+METADATA)
+             In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
              where X, Y and Z are positive integers, PRERELEASE is an optionnal
              string composed of alphanumeric characters and hyphens and
-             METADATA is also an optional string composed of alphanumeric
+             BUILD is also an optional string composed of alphanumeric
              characters and hyphens.
 
   <oldversion>  See <version> definition.
 
   <prerel>  String that must be composed of alphanumeric characters and hyphens.
 
-  <meta>  String that must be composed of alphanumeric characters and hyphens.
+  <build>   String that must be composed of alphanumeric characters and hyphens.
 
 Options:
   -f, --force=<version>  Forces a bump of any version without checking if it
@@ -45,7 +45,7 @@ Options:
 
 Commands:
   init     initialize this project's version.
-  bump     this project's version by one of major, minor, patch, prerel, meta
+  bump     this project's version by one of major, minor, patch, prerel, build
            or a forced potentialy conflicting version.
   compare  <version> to this project's version or to provided <oldversion>."
 
@@ -77,13 +77,13 @@ function validate-version {
       local minor=${BASH_REMATCH[2]}
       local patch=${BASH_REMATCH[3]}
       local prere=${BASH_REMATCH[4]}
-      local meta=${BASH_REMATCH[5]}
-      eval "$2=(\"$major\" \"$minor\" \"$patch\" \"$prere\" \"$meta\")"
+      local build=${BASH_REMATCH[5]}
+      eval "$2=(\"$major\" \"$minor\" \"$patch\" \"$prere\" \"$build\")"
     else
       echo "$version"
     fi
   else
-    error "version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+METADATA)'. See help for more information."
+    error "version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information."
   fi
 }
 
@@ -153,7 +153,7 @@ function command-bump {
   local minor=${split[1]}
   local patch=${split[2]}
   local prere=${split[3]}
-  local meta=${split[4]}
+  local build=${split[4]}
   while [[ $# -gt 0 ]]; do
     case "$1" in
       major) new="$(($major + 1)).0.0"; shift ;;
@@ -166,7 +166,7 @@ function command-bump {
           new=$(validate-version "${major}.${minor}.${patch}-${2}")
           shift 2
         fi ;;
-      meta)
+      build)
         if [[ $# -lt 2 ]]; then
           usage-help
         else
