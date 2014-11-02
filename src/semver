@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
 
-# exit on error
-set -e
-# exit on unbound variable in scope
-set -u
+set -o errexit -o nounset -o pipefail
 
-SEMVER_REGEX="^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$"
-SEMVER_REGEX_BASH="^([0-9]*)\.([0-9]*)\.([0-9]*)(\-[0-9A-Za-z-]+)?(\+[0-9A-Za-z-]+)?$"
+SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
 
-PROG="semver"
-PROG_VERSION=0.4.3
+PROG=semver
+PROG_VERSION=1.0.0
 
 VERSION_FILE=.version
 DEFAULT_VERSION=0.1.0
@@ -18,7 +14,7 @@ USAGE="\
 Usage:
   $PROG
   $PROG init [<version>]
-  $PROG bump [(major|minor|patch|prerel <prerel>|meta <meta>) | --force <version>] [--pretend]
+  $PROG bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
   $PROG --help
   $PROG --version
@@ -26,17 +22,17 @@ Usage:
 Arguments:
   <version>  A version must match the following regex pattern:
              \"${SEMVER_REGEX}\".
-             In english, the version must match X.Y.Z(-PRERELEASE)(+METADATA)
+             In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
              where X, Y and Z are positive integers, PRERELEASE is an optionnal
              string composed of alphanumeric characters and hyphens and
-             METADATA is also an optional string composed of alphanumeric
+             BUILD is also an optional string composed of alphanumeric
              characters and hyphens.
 
   <oldversion>  See <version> definition.
 
   <prerel>  String that must be composed of alphanumeric characters and hyphens.
 
-  <meta>  String that must be composed of alphanumeric characters and hyphens.
+  <build>   String that must be composed of alphanumeric characters and hyphens.
 
 Options:
   -f, --force=<version>  Forces a bump of any version without checking if it
@@ -48,7 +44,7 @@ Options:
 
 Commands:
   init     initialize this project's version.
-  bump     this project's version by one of major, minor, patch, prerel, meta
+  bump     this project's version by one of major, minor, patch, prerel, build
            or a forced potentialy conflicting version.
   compare  <version> to this project's version or to provided <oldversion>."
 
@@ -72,23 +68,26 @@ function usage-version {
 }
 
 function validate-version {
-  VERSION=$1
-  if [[ "$VERSION" =~ $SEMVER_REGEX_BASH ]]; then
+  local version=$1
+  if [[ "$version" =~ $SEMVER_REGEX ]]; then
+    # if a second argument is passed, store the result in var named by $2
     if [ "$#" -eq "2" ]; then
-      MAJOR=${BASH_REMATCH[1]}
-      MINOR=${BASH_REMATCH[2]}
-      PATCH=${BASH_REMATCH[3]}
-      PRERE=${BASH_REMATCH[4]}
-      META=${BASH_REMATCH[5]}
-      echo "$2=(\"$MAJOR\" \"$MINOR\" \"$PATCH\" \"$PRERE\" \"$META\")"
+      local major=${BASH_REMATCH[1]}
+      local minor=${BASH_REMATCH[2]}
+      local patch=${BASH_REMATCH[3]}
+      local prere=${BASH_REMATCH[4]}
+      local build=${BASH_REMATCH[5]}
+      eval "$2=(\"$major\" \"$minor\" \"$patch\" \"$prere\" \"$build\")"
     else
-      echo "$VERSION"
+      echo "$version"
     fi
   else
-    error "version $VERSION does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+METADATA)'. See help for more information."
+    error "version $version does not match the semver scheme 'X.Y.Z(-PRERELEASE)(+BUILD)'. See help for more information."
   fi
 }
 
+# this function will reverse-traverse folders until VERSION_FILE is found
+# or '/' is reached.
 function get-version {
   while [ -w . ]; do
     if [ -e $VERSION_FILE ]; then
@@ -103,8 +102,8 @@ function get-version {
 }
 
 function compare-version {
-  eval $(validate-version "$1" V)
-  eval $(validate-version "$2" V_)
+  validate-version "$1" V
+  validate-version "$2" V_
 
   # MAJOR, MINOR and PATCH should compare numericaly
   for i in 0 1 2; do
@@ -115,7 +114,7 @@ function compare-version {
     esac
   done
 
-  # PREREL should compare with the ascii order.
+  # PREREL should compare with the ASCII order.
   if [[ "${V[3]}" > "${V_[3]}" ]]; then
     echo 1; return 0;
   elif [[ "${V[3]}" < "${V_[3]}" ]]; then
@@ -131,9 +130,10 @@ function cli-print {
 }
 
 function command-init {
+  local version=""
   case $# in
-    0) VERSION="$DEFAULT_VERSION" ;;
-    1) VERSION=$(validate-version "$1") ;;
+    0) version="$DEFAULT_VERSION" ;;
+    1) version=$(validate-version "$1") ;;
     2) usage-help;;
   esac
 
@@ -141,70 +141,68 @@ function command-init {
     error "version file $VERSION_FILE exists, cannot initialize project.  Either remove the current file or use 'version bump --force <newversion>'."
   fi
 
-  echo "$VERSION" | tee "$VERSION_FILE"
+  echo "$version" | tee "$VERSION_FILE"
   exit 0
 }
 
 function command-bump {
-  VERSION=$(get-version)
-  eval $(validate-version $VERSION split)
-  PRETEND=0
-  MAJOR=${split[0]}
-  MINOR=${split[1]}
-  PATCH=${split[2]}
-  PRERE=${split[3]}
-  META=${split[4]}
+  local new; local pretend=0; local version=$(get-version)
+  validate-version $version split
+  local major=${split[0]}
+  local minor=${split[1]}
+  local patch=${split[2]}
+  local prere=${split[3]}
+  local build=${split[4]}
   while [[ $# -gt 0 ]]; do
     case "$1" in
-      major) NEW="$(($MAJOR + 1)).0.0"; shift ;;
-      minor) NEW="${MAJOR}.$(($MINOR + 1)).0"; shift ;;
-      patch) NEW="${MAJOR}.${MINOR}.$(($PATCH+ 1))"; shift ;;
+      major) new="$(($major + 1)).0.0"; shift ;;
+      minor) new="${major}.$(($minor + 1)).0"; shift ;;
+      patch) new="${major}.${minor}.$(($patch + 1))"; shift ;;
       prerel)
         if [[ $# -lt 2 ]]; then
           usage-help
         else
-          NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}-${2}")
+          new=$(validate-version "${major}.${minor}.${patch}-${2}")
           shift 2
         fi ;;
-      meta)
+      build)
         if [[ $# -lt 2 ]]; then
           usage-help
         else
-          NEW=$(validate-version "${MAJOR}.${MINOR}.${PATCH}${PRERE}+${2}")
+          new=$(validate-version "${major}.${minor}.${patch}${prere}+${2}")
           shift 2
         fi ;;
       --force|-f)
         if [[ $# -lt 2 ]]; then
           usage-help
         else
-          NEW=$(validate-version "$2")
+          new=$(validate-version "$2")
           shift 2
         fi ;;
-      --pretend|-p) PRETEND=1; shift ;;
+      --pretend|-p) pretend=1; shift ;;
       "") break;;
       *) usage-help ;;
     esac
   done
 
-  if [[ "$PRETEND" -eq 1 ]]; then
-    echo $NEW
+  if [[ "$pretend" -eq 1 ]]; then
+    echo $new
   else
-    echo $NEW | tee $VERSION_FILE
+    echo $new | tee $VERSION_FILE
   fi
   exit 0
 }
 
 function command-compare {
-  VERSION=$(get-version)
+  local v; local v_; local version=$(get-version)
 
   case $# in
     0) usage-help ;;
-    1) V=$(validate-version "$1"); V_=$VERSION ;;
-    2) V=$(validate-version "$1"); V_=$(validate-version "$2") ;;
+    1) v=$(validate-version "$1"); v_=$version ;;
+    2) v=$(validate-version "$1"); v_=$(validate-version "$2") ;;
   esac
 
-  COMP=$(compare-version "$V" "$V_")
-  echo "$COMP"
+  echo $(compare-version "$v" "$v_")
   exit 0
 }
 
