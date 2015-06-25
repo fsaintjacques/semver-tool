@@ -13,6 +13,8 @@ correct versioning for official releases (git flow release).
 [semver]: https://github.com/mojombo/semver
 [gitflow]: https://github.com/nvie/gitflow
 
+[![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=develop)](https://travis-ci.org/fsaintjacques/semver-tool)
+
 usage
 -----
 
