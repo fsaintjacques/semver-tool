@@ -7,11 +7,13 @@ follows the [semver] specification. Its use are:
   - bump version
   - compare version
 
-It can be combined with [gitflow], and git pre-commit hooks to garantee a
+It can be combined with [gitflow], and git pre-commit hooks to guarantee a
 correct versioning for official releases (git flow release).
 
 [semver]: https://github.com/mojombo/semver
 [gitflow]: https://github.com/nvie/gitflow
+
+[![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=master)](https://travis-ci.org/fsaintjacques/semver-tool)
 
 usage
 -----
@@ -26,7 +28,7 @@ usage
 
     Arguments:
       <version>  A version must match the following regex pattern:
-                 "^[0-9]*\.[0-9]*\.[0-9]*(-[0-9A-Za-z-]*)?(+[0-9A-Za-z-]*)?$".
+                 "^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$".
                  In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
                  where X, Y and Z are positive integers, PRERELEASE is an optionnal
                  string composed of alphanumeric characters and hyphens and
