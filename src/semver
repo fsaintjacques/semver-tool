@@ -136,7 +136,7 @@ function git-entry {
       return
     fi
     git add .version
-    git tag "$1"
+    git tag "$1" -am "$1"
     git commit -m "$1"
   fi
 }
@@ -166,6 +166,7 @@ function command-bump {
   local patch=${split[2]}
   local prere=${split[3]}
   local build=${split[4]}
+  local new=""
   while [[ $# -gt 0 ]]; do
     case "$1" in
       major) new="$(($major + 1)).0.0"; shift ;;
@@ -197,6 +198,12 @@ function command-bump {
       *) usage-help ;;
     esac
   done
+
+  if [ -z "$new" ]; then
+      echo "Missing version information"
+      usage-help
+      exit 1
+  fi
 
   if [[ "$pretend" -eq 1 ]]; then
     echo $new
