@@ -135,9 +135,10 @@ function git-entry {
       echo "Working directory not clean. Cannot create tag / commit."
       return
     fi
+    tag=v"$1"
     git add .version
-    git tag "$1" -am "$1"
-    git commit -m "$1"
+    git tag "$tag" -am "$tag"
+    git commit -m "$tag"
   fi
 }
 
