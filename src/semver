@@ -137,8 +137,8 @@ function git-entry {
     fi
     tag=v"$1"
     git add .version
-    git tag "$tag" -am "$tag"
     git commit -m "$tag"
+    git tag "$tag" -am "$tag"
   fi
 }
 
