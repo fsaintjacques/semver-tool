@@ -163,8 +163,6 @@ function command-init {
     error "version file $VERSION_FILE exists, cannot initialize project.  Either remove the current file or use 'version bump --force <newversion>'."
   fi
 
-  echo $VERSION_FILE
-
   echo "$version" | tee "$VERSION_FILE"
   exit 0
 }
