@@ -90,20 +90,6 @@ function validate-version {
   fi
 }
 
-# this function will reverse-traverse folders until $1 is found
-# or '/' is reached.
-function search-file {
-  while [ -w . ]; do
-    if [ -e $1 ]; then
-      return 0
-    fi
-
-    pushd .. > /dev/null
-  done
-
-  return 1
-}
-
 # extracts the version number from package.json
 function package-json-get-version {
   echo "$(cat package.json | grep -Ei 'version.+[0-9].+\"' | grep -oEi '[0-9][^\"]+')"
@@ -118,8 +104,7 @@ function get-version {
     local version="$(cat $VERSION_FILE)"
   fi
 
-  search-file $VERSION_FILE
-  if [ $? -eq 0 ] ; then
+  if [ -f $VERSION_FILE ] ; then
     validate-version "$version"
     return 0
   fi
@@ -178,7 +163,9 @@ function command-init {
     error "version file $VERSION_FILE exists, cannot initialize project.  Either remove the current file or use 'version bump --force <newversion>'."
   fi
 
-  echo "$(replace-version $version)"
+  echo $VERSION_FILE
+
+  echo "$version" | tee "$VERSION_FILE"
   exit 0
 }
 
@@ -244,8 +231,7 @@ function command-compare {
 }
 
 if $USE_PACKAGE_JSON ; then
-  search-file package.json
-  if [ $? -eq 0 ] ; then
+  if [ -f 'package.json' ] ; then
     VERSION_FILE='package.json'
   fi
 fi

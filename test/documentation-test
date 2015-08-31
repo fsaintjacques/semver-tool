@@ -9,8 +9,9 @@ fi
 RESULT=$(cat ../README.md| grep '^    \$ semver' | sed -e 's#    \$ #../src/#' | xargs -L1 bash)
 EXPECT=$(cat ../README.md| grep '^    [^a-zA-Z$ ]' |grep -v '^    \$ semver' | sed -e 's#^    ##')
 
+rm -f .version
+
 if [[ "$RESULT" != "$EXPECT" ]]; then
+  echo 'not as expected'
   exit 1
 fi
-
-rm -f .version
