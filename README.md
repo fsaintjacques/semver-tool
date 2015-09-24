@@ -81,7 +81,7 @@ Basic operations
 Comparing version for scripting
 
     $ semver compare 1.0.1
-    -1
+    1
     $ semver compare 1.0.1-rc1.1.0
     0
     $ semver compare 1.0.1-rc1.1.0+build.052
