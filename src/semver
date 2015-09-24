@@ -16,6 +16,7 @@ Usage:
   $PROG init [<version>]
   $PROG bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
+  $PROG release [--pretend]
   $PROG --help
   $PROG --version
 
@@ -46,7 +47,8 @@ Commands:
   init     initialize this project's version.
   bump     this project's version by one of major, minor, patch, prerel, build
            or a forced potentialy conflicting version.
-  compare  <version> to this project's version or to provided <oldversion>."
+  compare  <version> to this project's version or to provided <oldversion>.
+  release  release the current version."
 
 
 function warning {
@@ -212,6 +214,25 @@ function command-compare {
   exit 0
 }
 
+function command-release {
+  local pretend=0; local version=$(get-version); local release="${version%%[-+]*}"
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --pretend|-p) pretend=1; shift ;;
+      "") break;;
+      *) usage-help ;;
+    esac
+  done
+  
+  if [[ "$pretend" -eq 1 ]]; then
+    echo $release
+  else
+    echo $release | tee $VERSION_FILE
+  fi
+  exit 0
+}
+
 case $# in
   0) cli-print ;;
 esac
@@ -222,5 +243,6 @@ case $1 in
   init) shift; command-init $@;;
   bump) shift; command-bump $@;;
   compare) shift; command-compare $@;;
+  release) shift; command-release $@;;
   *) echo "Unknown arguments: $@"; usage-help;;
 esac

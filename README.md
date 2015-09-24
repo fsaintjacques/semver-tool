@@ -24,6 +24,7 @@ usage
       semver init [<version>]
       semver bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
       semver compare <version> [<oldversion>]
+      semver release [--pretend]
       semver --help
       semver --version
 
@@ -55,6 +56,7 @@ usage
       bump     this project's version by one of major, minor, patch, prerel, build
                or a forced potentialy conflicting version.
       compare  <version> to this project's version or to provided <oldversion>.
+      release  release the current version.
 
 examples
 --------
@@ -77,6 +79,8 @@ Basic operations
     1.0.1-rc1.1.0
     $ semver bump build build.051
     1.0.1-rc1.1.0+build.051
+    $ semver release -p
+    1.0.1
 
 Comparing version for scripting
 
