@@ -13,7 +13,8 @@ correct versioning for official releases (git flow release).
 [semver]: https://github.com/mojombo/semver
 [gitflow]: https://github.com/nvie/gitflow
 
-[![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=master)](https://travis-ci.org/fsaintjacques/semver-tool)
+[![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=develop)](https://travis-ci.org/fsaintjacques/semver-tool)
+[![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/1.0.1)
 
 usage
 -----
