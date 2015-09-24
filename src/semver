@@ -115,9 +115,15 @@ function compare-version {
   done
 
   # PREREL should compare with the ASCII order.
-  if [[ "${V[3]}" > "${V_[3]}" ]]; then
+  if [[ -n "${V[3]}" ]] && [[ -n "${V_[3]}" ]]; then
+    if [[ "${V[3]}" > "${V_[3]}" ]]; then
+      echo 1; return 0;
+    elif [[ "${V[3]}" < "${V_[3]}" ]]; then
+      echo -1; return 0;
+    fi
+  elif [[ -z "${V[3]}" ]] && [[ -n "${V_[3]}" ]]; then
     echo 1; return 0;
-  elif [[ "${V[3]}" < "${V_[3]}" ]]; then
+  elif [[ -n "${V[3]}" ]] && [[ -z "${V_[3]}" ]]; then
     echo -1; return 0;
   fi
 
