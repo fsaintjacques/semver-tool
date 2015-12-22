@@ -15,6 +15,8 @@ correct versioning for official releases (git flow release).
 
 [![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=develop)](https://travis-ci.org/fsaintjacques/semver-tool)
 [![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/1.0.1)
+[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://github.com/fsaintjacques/semver-tool/blob/develop/LICENSE)
+
 
 usage
 -----
