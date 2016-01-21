@@ -1,5 +1,5 @@
-semver's utily
-==============
+The semver shell utility
+========================
 
 semver is a little tool to manipulate version bumping in a project that
 follows the [semver] specification. Its use are:
@@ -7,7 +7,7 @@ follows the [semver] specification. Its use are:
   - bump version
   - compare version
 
-It can be combined with [gitflow], and git pre-commit hooks to guarantee a
+It can be combined with [gitflow], and `git` pre-commit hooks to guarantee a
 correct versioning for official releases (git flow release).
 
 [semver]: https://github.com/mojombo/semver
