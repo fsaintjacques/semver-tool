@@ -36,7 +36,7 @@ Arguments:
   <build>   String that must be composed of alphanumeric characters and hyphens.
 
 Options:
-  -u, --use <version>    Use a specific version instead of taking the version from the file.
+  -u, --use=<version>    Use a specific version instead of taking the version from the file.
   -f, --force=<version>  Forces a bump of any version without checking if it
                          respects semver bumping rules.
   -p, --pretend          Do not overwrite the project's version file, only
@@ -224,7 +224,7 @@ function command-compare {
 }
 
 function command-release {
-  local pretend=0; local version=$(get-version); 
+  local pretend=0; local version=$(get-version);
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -240,9 +240,9 @@ function command-release {
       *) usage-help ;;
     esac
   done
-  
+
   local release="${version%%[-+]*}"
-  
+
   if [[ "$pretend" -eq 1 ]]; then
     echo $release
   else
