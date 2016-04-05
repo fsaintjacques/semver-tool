@@ -36,7 +36,7 @@ Arguments:
   <build>   String that must be composed of alphanumeric characters and hyphens.
 
 Options:
-  -u, --use <version>    Use this specific version instead of taking the version from the file.
+  -u, --use <version>    Use a specific version instead of taking the version from the file.
   -f, --force=<version>  Forces a bump of any version without checking if it
                          respects semver bumping rules.
   -p, --pretend          Do not overwrite the project's version file, only
