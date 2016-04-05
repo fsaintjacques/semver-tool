@@ -14,9 +14,9 @@ USAGE="\
 Usage:
   $PROG
   $PROG init [<version>]
-  $PROG bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
+  $PROG bump [[--use <version>] (major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
-  $PROG release [--pretend]
+  $PROG release [--use <version>] [--pretend]
   $PROG --help
   $PROG --version
 
@@ -36,6 +36,7 @@ Arguments:
   <build>   String that must be composed of alphanumeric characters and hyphens.
 
 Options:
+  -u, --use <version>    Use this specific version instead of taking the version from the file.
   -f, --force=<version>  Forces a bump of any version without checking if it
                          respects semver bumping rules.
   -p, --pretend          Do not overwrite the project's version file, only
@@ -155,13 +156,14 @@ function command-init {
 
 function command-bump {
   local new; local pretend=0; local version=$(get-version)
-  validate-version $version split
-  local major=${split[0]}
-  local minor=${split[1]}
-  local patch=${split[2]}
-  local prere=${split[3]}
-  local build=${split[4]}
   while [[ $# -gt 0 ]]; do
+    validate-version $version split
+    local major=${split[0]}
+    local minor=${split[1]}
+    local patch=${split[2]}
+    local prere=${split[3]}
+    local build=${split[4]}
+
     case "$1" in
       major) new="$(($major + 1)).0.0"; shift ;;
       minor) new="${major}.$(($minor + 1)).0"; shift ;;
@@ -178,6 +180,13 @@ function command-bump {
           usage-help
         else
           new=$(validate-version "${major}.${minor}.${patch}${prere}+${2}")
+          shift 2
+        fi ;;
+      --use|-u)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          version="$2"
           shift 2
         fi ;;
       --force|-f)
@@ -215,15 +224,24 @@ function command-compare {
 }
 
 function command-release {
-  local pretend=0; local version=$(get-version); local release="${version%%[-+]*}"
+  local pretend=0; local version=$(get-version); 
 
   while [[ $# -gt 0 ]]; do
     case "$1" in
+      --use|-u)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          version="$2"
+          shift 2
+        fi ;;
       --pretend|-p) pretend=1; shift ;;
       "") break;;
       *) usage-help ;;
     esac
   done
+  
+  local release="${version%%[-+]*}"
   
   if [[ "$pretend" -eq 1 ]]; then
     echo $release
