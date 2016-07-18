@@ -89,11 +89,15 @@ function validate-version {
   fi
 }
 
+function from-stdin {
+  [ "$VERSION_FILE" == "-" ]
+}
+
 # this function will reverse-traverse folders until VERSION_FILE is found
 # or '/' is reached.
 function get-version {
   while [ -w . ]; do
-    if [ -e $VERSION_FILE ]; then
+    if [ -e "$VERSION_FILE" ] || from-stdin; then
       validate-version "$(cat $VERSION_FILE)"
       return 0
     fi
@@ -202,7 +206,7 @@ function command-bump {
     esac
   done
 
-  if [[ "$pretend" -eq 1 ]]; then
+  if [ "$pretend" -eq 1 ] || from-stdin; then
     echo $new
   else
     echo $new | tee $VERSION_FILE
