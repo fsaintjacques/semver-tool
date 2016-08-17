@@ -45,9 +45,9 @@ Options:
   -h, --help             Print this help message.
 
 Commands:
-  init     initialize this project's version.
+  init     initialize this project's version. If it finds a .git directory, it will also create a tag with the version.
   bump     this project's version by one of major, minor, patch, prerel, build
-           or a forced potentialy conflicting version.
+           or a forced potentialy conflicting version. If it finds a .git directory, it will also create a tag with the version.
   compare  <version> to this project's version or to provided <oldversion>.
   release  release the current version."
 
@@ -138,6 +138,19 @@ function cli-print {
   exit 0
 }
 
+function git-entry {
+  if [ -d ".git" ]; then
+    if [ ! -z "$(git status --porcelain | grep -v .version)" ]; then 
+      echo "Working directory not clean. Cannot create tag / commit."
+      return
+    fi
+    tag=v"$1"
+    git add .version
+    git commit -m "$tag"
+    git tag "$tag" -am "$tag"
+  fi
+}
+
 function command-init {
   local version=""
   case $# in
@@ -151,11 +164,12 @@ function command-init {
   fi
 
   echo "$version" | tee "$VERSION_FILE"
+  git-entry $version
   exit 0
 }
 
 function command-bump {
-  local new; local pretend=0; local version=$(get-version)
+  local new=""; local pretend=0; local version=$(get-version)
   while [[ $# -gt 0 ]]; do
     validate-version $version split
     local major=${split[0]}
@@ -202,10 +216,17 @@ function command-bump {
     esac
   done
 
+  if [ -z "$new" ]; then
+      echo "Missing version information"
+      usage-help
+      exit 1
+  fi
+
   if [[ "$pretend" -eq 1 ]]; then
     echo $new
   else
     echo $new | tee $VERSION_FILE
+    git-entry $new
   fi
   exit 0
 }
