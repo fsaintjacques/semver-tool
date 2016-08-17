@@ -5,17 +5,18 @@ set -o errexit -o nounset -o pipefail
 SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
 
 PROG=semver
-PROG_VERSION=1.0.1
+PROG_VERSION=1.2.0
 
-VERSION_FILE=.version
+VERSION_FILE=${VERSION_FILE:-.version}
 DEFAULT_VERSION=0.1.0
 
 USAGE="\
 Usage:
   $PROG
   $PROG init [<version>]
-  $PROG bump [(major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
+  $PROG bump [[--use <version>] (major|minor|patch|prerel <prerel>|build <build>) | --force <version>] [--pretend]
   $PROG compare <version> [<oldversion>]
+  $PROG release [--use <version>] [--pretend]
   $PROG --help
   $PROG --version
 
@@ -35,6 +36,7 @@ Arguments:
   <build>   String that must be composed of alphanumeric characters and hyphens.
 
 Options:
+  -u, --use=<version>    Use a specific version instead of taking the version from the file.
   -f, --force=<version>  Forces a bump of any version without checking if it
                          respects semver bumping rules.
   -p, --pretend          Do not overwrite the project's version file, only
@@ -46,7 +48,8 @@ Commands:
   init     initialize this project's version. If it finds a .git directory, it will also create a tag with the version.
   bump     this project's version by one of major, minor, patch, prerel, build
            or a forced potentialy conflicting version. If it finds a .git directory, it will also create a tag with the version.
-  compare  <version> to this project's version or to provided <oldversion>."
+  compare  <version> to this project's version or to provided <oldversion>.
+  release  release the current version."
 
 
 function warning {
@@ -115,9 +118,15 @@ function compare-version {
   done
 
   # PREREL should compare with the ASCII order.
-  if [[ "${V[3]}" > "${V_[3]}" ]]; then
+  if [[ -n "${V[3]}" ]] && [[ -n "${V_[3]}" ]]; then
+    if [[ "${V[3]}" > "${V_[3]}" ]]; then
+      echo 1; return 0;
+    elif [[ "${V[3]}" < "${V_[3]}" ]]; then
+      echo -1; return 0;
+    fi
+  elif [[ -z "${V[3]}" ]] && [[ -n "${V_[3]}" ]]; then
     echo 1; return 0;
-  elif [[ "${V[3]}" < "${V_[3]}" ]]; then
+  elif [[ -n "${V[3]}" ]] && [[ -z "${V_[3]}" ]]; then
     echo -1; return 0;
   fi
 
@@ -160,15 +169,15 @@ function command-init {
 }
 
 function command-bump {
-  local new; local pretend=0; local version=$(get-version)
-  validate-version $version split
-  local major=${split[0]}
-  local minor=${split[1]}
-  local patch=${split[2]}
-  local prere=${split[3]}
-  local build=${split[4]}
-  local new=""
+  local new=""; local pretend=0; local version=$(get-version)
   while [[ $# -gt 0 ]]; do
+    validate-version $version split
+    local major=${split[0]}
+    local minor=${split[1]}
+    local patch=${split[2]}
+    local prere=${split[3]}
+    local build=${split[4]}
+
     case "$1" in
       major) new="$(($major + 1)).0.0"; shift ;;
       minor) new="${major}.$(($minor + 1)).0"; shift ;;
@@ -185,6 +194,13 @@ function command-bump {
           usage-help
         else
           new=$(validate-version "${major}.${minor}.${patch}${prere}+${2}")
+          shift 2
+        fi ;;
+      --use|-u)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          version="$2"
           shift 2
         fi ;;
       --force|-f)
@@ -228,6 +244,34 @@ function command-compare {
   exit 0
 }
 
+function command-release {
+  local pretend=0; local version=$(get-version);
+
+  while [[ $# -gt 0 ]]; do
+    case "$1" in
+      --use|-u)
+        if [[ $# -lt 2 ]]; then
+          usage-help
+        else
+          version="$2"
+          shift 2
+        fi ;;
+      --pretend|-p) pretend=1; shift ;;
+      "") break;;
+      *) usage-help ;;
+    esac
+  done
+
+  local release="${version%%[-+]*}"
+
+  if [[ "$pretend" -eq 1 ]]; then
+    echo $release
+  else
+    echo $release | tee $VERSION_FILE
+  fi
+  exit 0
+}
+
 case $# in
   0) cli-print ;;
 esac
@@ -238,5 +282,6 @@ case $1 in
   init) shift; command-init $@;;
   bump) shift; command-bump $@;;
   compare) shift; command-compare $@;;
+  release) shift; command-release $@;;
   *) echo "Unknown arguments: $@"; usage-help;;
 esac
