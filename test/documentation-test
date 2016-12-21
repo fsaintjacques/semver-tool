@@ -1,16 +1,33 @@
 #!/usr/bin/env bash
 
-set -e
+BASENAME=$(basename "$0")
+SEMVER_HOME="$(cd "$(dirname "$(which $0)")/.." >/dev/null; pwd -P)"
 
-if [ -e .version ]; then
-  rm .version
-fi
+SEMVER=$SEMVER_HOME/src/semver
+README=$SEMVER_HOME/README.md
 
-RESULT=$(cat ../README.md| grep '^    \$ semver' | sed -e 's#    \$ #../src/#' | xargs -L1 bash)
-EXPECT=$(cat ../README.md| grep '^    [^a-zA-Z$ ]' |grep -v '^    \$ semver' | sed -e 's#^    ##')
+set -e -u
 
-if [[ "$RESULT" != "$EXPECT" ]]; then
-  exit 1
-fi
+function list_tests() {
+  grep '^    \$ semver' "$README" | cut -d '$' -f2-
+}
 
-rm -f .version
+function expected_result_for_test() {
+  local test=$1
+  grep -A1 "$test" "$README" | tail -1 | sed -e 's/^ *//'
+}
+
+
+list_tests |
+  while read -r unit_test; do
+    expected_result=$(expected_result_for_test "$unit_test")
+    # make test invoke ../src/semver
+    eval_test=$(echo $unit_test | sed -e 's#^semver#'$SEMVER'#')
+    actual_result=$($eval_test)
+
+    if [[ "$actual_result" != "$expected_result" ]]; then
+        echo "Test failed: $unit_test"
+        echo "Expected " $expected_result " but got " $actual_result
+        exit 1
+    fi
+  done

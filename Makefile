@@ -1,6 +1,7 @@
-test: dummy-test
-dummy-test:
-	cd test; ./documentation-test
+test:
+	test/documentation-test
 
-install: test
+install:
 	install src/semver /usr/local/bin
+
+.PHONY: test install
