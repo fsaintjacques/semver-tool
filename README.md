@@ -65,6 +65,8 @@ examples
 
 Basic operations
 
+    $ semver compare 2.0.0 1.0.0
+    1
     $ semver init
     0.1.0
     $ semver bump patch
