@@ -12,7 +12,6 @@ DEFAULT_VERSION=0.1.0
 
 USAGE="\
 Usage:
-  $PROG
   $PROG bump (major|minor|patch|prerel <prerel>|build <build>) <version>
   $PROG compare <version> <other_version>
   $PROG --help

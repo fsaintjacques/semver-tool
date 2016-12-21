@@ -22,7 +22,6 @@ usage
 
 ```
 Usage:
-  semver
   semver bump (major|minor|patch|prerel <prerel>|build <build>) <version>
   semver compare <version> <other_version>
   semver --help
