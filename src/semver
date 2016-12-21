@@ -197,10 +197,11 @@ function command-bump {
           shift 2
         fi ;;
       --pretend|-p) pretend=1; shift ;;
-      "") break;;
       *) usage-help ;;
     esac
   done
+
+  [ -z "${new:-}" ] && usage-help
 
   if [[ "$pretend" -eq 1 ]]; then
     echo $new
@@ -236,7 +237,6 @@ function command-release {
           shift 2
         fi ;;
       --pretend|-p) pretend=1; shift ;;
-      "") break;;
       *) usage-help ;;
     esac
   done
