@@ -212,11 +212,11 @@ function command-bump {
 }
 
 function command-compare {
-  local v; local v_; local version=$(get-version)
+  local v; local v_;
 
   case $# in
     0) usage-help ;;
-    1) v=$(validate-version "$1"); v_=$version ;;
+    1) v=$(validate-version "$1"); v_=$(get-version) ;;
     2) v=$(validate-version "$1"); v_=$(validate-version "$2") ;;
   esac
 
