@@ -10,7 +10,6 @@ follows the [semver] specification. Its use are:
 It can be combined `git` pre-commit hooks to guarantee a correct versioning.
 
 [semver]: https://github.com/mojombo/semver
-[gitflow]: https://github.com/nvie/gitflow
 
 [![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=master)](https://travis-ci.org/fsaintjacques/semver-tool)
 [![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/2.0.0)

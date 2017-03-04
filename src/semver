@@ -7,9 +7,6 @@ SEMVER_REGEX="^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+
 PROG=semver
 PROG_VERSION=2.0.0
 
-VERSION_FILE=${VERSION_FILE:-.version}
-DEFAULT_VERSION=0.1.0
-
 USAGE="\
 Usage:
   $PROG bump (major|minor|patch|prerel <prerel>|build <build>) <version>
@@ -45,10 +42,6 @@ Commands:
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
            older."
 
-
-function warning {
-  echo -e "$1" >&2
-}
 
 function error {
   echo -e "$1" >&2
@@ -128,23 +121,23 @@ function command-bump {
     *) usage-help;;
   esac
 
-  validate-version $version split
-  local major=${split[0]}
-  local minor=${split[1]}
-  local patch=${split[2]}
-  local prere=${split[3]}
-  local build=${split[4]}
+  validate-version "$version" parts
+  local major="${parts[0]}"
+  local minor="${parts[1]}"
+  local patch="${parts[2]}"
+  local prere="${parts[3]}"
+  local build="${parts[4]}"
 
   case "$command" in
-    major) new="$(($major + 1)).0.0";;
-    minor) new="${major}.$(($minor + 1)).0";;
-    patch) new="${major}.${minor}.$(($patch + 1))";;
+    major) new="$((major + 1)).0.0";;
+    minor) new="${major}.$((minor + 1)).0";;
+    patch) new="${major}.${minor}.$((patch + 1))";;
     prerel) new=$(validate-version "${major}.${minor}.${patch}-${sub_version}");;
     build) new=$(validate-version "${major}.${minor}.${patch}${prere}+${sub_version}");;
     *) usage-help ;;
   esac
 
-  echo $new
+  echo "$new"
   exit 0
 }
 
@@ -156,18 +149,18 @@ function command-compare {
     *) usage-help ;;
   esac
 
-  echo $(compare-version "$v" "$v_")
+  compare-version "$v" "$v_"
   exit 0
 }
 
 case $# in
-  0) cli-print ;;
+  0) echo "Unknown command: $*"; usage-help;;
 esac
 
 case $1 in
   --help|-h) echo -e "$USAGE"; exit 0;;
   --version|-v) usage-version ;;
-  bump) shift; command-bump $@;;
-  compare) shift; command-compare $@;;
-  *) echo "Unknown arguments: $@"; usage-help;;
+  bump) shift; command-bump "$@";;
+  compare) shift; command-compare "$@";;
+  *) echo "Unknown arguments: $*"; usage-help;;
 esac

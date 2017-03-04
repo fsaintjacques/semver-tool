@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
-BASENAME=$(basename "$0")
-SEMVER_HOME="$(cd "$(dirname "$(which $0)")/.." >/dev/null; pwd -P)"
+SEMVER_HOME="$(cd "$(dirname "$(which "$0")")/.." >/dev/null; pwd -P)"
 
 SEMVER=$SEMVER_HOME/src/semver
 README=$SEMVER_HOME/README.md
@@ -22,12 +21,11 @@ list_tests |
   while read -r unit_test; do
     expected_result=$(expected_result_for_test "$unit_test")
     # make test invoke ../src/semver
-    eval_test=$(echo $unit_test | sed -e 's#^semver#'$SEMVER'#')
-    actual_result=$($eval_test)
+    actual_result=$($(echo "${unit_test//semver/$SEMVER}"))
 
     if [[ "$actual_result" != "$expected_result" ]]; then
         echo "Test failed: $unit_test"
-        echo "Expected " $expected_result " but got " $actual_result
+        echo "Expected " "$expected_result" " but got " "$actual_result"
         exit 1
     fi
   done
