@@ -122,6 +122,7 @@ function command-bump {
   esac
 
   validate-version "$version" parts
+  # shellcheck disable=SC2154
   local major="${parts[0]}"
   local minor="${parts[1]}"
   local patch="${parts[2]}"
