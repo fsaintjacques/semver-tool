@@ -21,7 +21,7 @@ list_tests |
   while read -r unit_test; do
     expected_result=$(expected_result_for_test "$unit_test")
     # make test invoke ../src/semver
-    actual_result=$($(echo "${unit_test//semver/$SEMVER}"))
+    actual_result=$(${unit_test//semver/$SEMVER})
 
     if [[ "$actual_result" != "$expected_result" ]]; then
         echo "Test failed: $unit_test"

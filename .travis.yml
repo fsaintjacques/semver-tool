@@ -1,2 +1,13 @@
+sudo: required
+
+services:
+  - docker
+
 language: c
-script: make test
+
+before_install:
+  - docker pull koalaman/shellcheck
+
+script:
+  - make lint
+  - make test
