@@ -74,6 +74,8 @@ Basic bumping operations
     1.0.1-rc1.1.0
     $ semver bump build build.051 1.0.1-rc1.1.0
     1.0.1-rc1.1.0+build.051
+    $ semver bump final 0.1.0-SNAPSHOT
+    0.1.0
 
 Comparing version for scripting
 
