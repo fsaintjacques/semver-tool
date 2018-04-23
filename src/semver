@@ -9,7 +9,7 @@ PROG_VERSION=2.0.0
 
 USAGE="\
 Usage:
-  $PROG bump (major|minor|patch|final|prerel <prerel>|build <build>) <version>
+  $PROG bump (major|minor|patch|release|prerel <prerel>|build <build>) <version>
   $PROG compare <version> <other_version>
   $PROG --help
   $PROG --version
@@ -111,7 +111,7 @@ function command-bump {
 
   case $# in
     2) case $1 in
-        major|minor|patch|final) command=$1; version=$2;;
+        major|minor|patch|release) command=$1; version=$2;;
         *) usage-help;;
        esac ;;
     3) case $1 in
@@ -133,7 +133,7 @@ function command-bump {
     major) new="$((major + 1)).0.0";;
     minor) new="${major}.$((minor + 1)).0";;
     patch) new="${major}.${minor}.$((patch + 1))";;
-    final) new="${major}.${minor}.${patch}";;
+    release) new="${major}.${minor}.${patch}";;
     prerel) new=$(validate-version "${major}.${minor}.${patch}-${sub_version}");;
     build) new=$(validate-version "${major}.${minor}.${patch}${prere}+${sub_version}");;
     *) usage-help ;;
