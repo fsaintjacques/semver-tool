@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-SEMVER_HOME="$(cd "$(dirname "$(which "$0")")/.." >/dev/null; pwd -P)"
+SEMVER_HOME="$(cd "$(dirname "$(command -v "$0")")/.." >/dev/null; pwd -P)"
 
 SEMVER=$SEMVER_HOME/src/semver
 README=$SEMVER_HOME/README.md
