@@ -11,6 +11,7 @@ USAGE="\
 Usage:
   $PROG bump (major|minor|patch|release|prerel <prerel>|build <build>) <version>
   $PROG compare <version> <other_version>
+  $PROG get (major|minor|patch|release|prerel|build) <version>
   $PROG --help
   $PROG --version
 
@@ -40,7 +41,10 @@ Commands:
 
   compare  Compare <version> with <other_version>, output to stdout the
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
-           older."
+           older.
+
+  get      Extract given part of <version>, where part is one of major, minor,
+           patch, prerel, build."
 
 
 function error {
@@ -155,6 +159,34 @@ function command-compare {
   exit 0
 }
 
+
+# shellcheck disable=SC2034
+function command-get {
+    local part version
+
+    if [[ "$#" -ne "2" ]] || [[ -z "$1" ]] || [[ -z "$2" ]]; then
+        usage-help
+        exit 0
+    fi
+
+    part="$1"
+    version="$2"
+
+    validate-version "$version" parts
+    local major="${parts[0]}"
+    local minor="${parts[1]}"
+    local patch="${parts[2]}"
+    local prerel="${parts[3]}"
+    local build="${parts[4]}"
+
+    case "$part" in
+        major|minor|patch|release|prerel|build) echo "${!part}" ;;
+        *) usage-help ;;
+    esac
+
+    exit 0
+}
+
 case $# in
   0) echo "Unknown command: $*"; usage-help;;
 esac
@@ -163,6 +195,7 @@ case $1 in
   --help|-h) echo -e "$USAGE"; exit 0;;
   --version|-v) usage-version ;;
   bump) shift; command-bump "$@";;
+  get) shift; command-get "$@";;
   compare) shift; command-compare "$@";;
   *) echo "Unknown arguments: $*"; usage-help;;
 esac

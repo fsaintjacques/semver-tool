@@ -6,6 +6,7 @@ follows the [semver] specification. Its use are:
 
   - bump version
   - compare version
+  - extract specific version part
 
 It can be combined `git` pre-commit hooks to guarantee a correct versioning.
 
@@ -23,6 +24,7 @@ usage
 Usage:
   semver bump (major|minor|patch|prerel <prerel>|build <build>) <version>
   semver compare <version> <other_version>
+  semver get (major|minor|patch|release|prerel|build) <version>
   semver --help
   semver --version
 
@@ -52,7 +54,10 @@ Commands:
 
   compare  Compare <version> with <other_version>, output to stdout the
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
-           older."
+           older.
+
+  get      Extract given part of <version>, where part is one of major, minor,
+           patch, prerel, build.
 ```
 
 examples
