@@ -70,7 +70,7 @@ function validate-version {
       local minor=${BASH_REMATCH[2]}
       local patch=${BASH_REMATCH[3]}
       local prere=${BASH_REMATCH[4]}
-      local build=${BASH_REMATCH[5]}
+      local build=${BASH_REMATCH[6]}
       eval "$2=(\"$major\" \"$minor\" \"$patch\" \"$prere\" \"$build\")"
     else
       echo "$version"
