@@ -1,3 +1,4 @@
+PREFIX ?= /usr/local
 ROOT ?= $(shell pwd)
 
 test:
@@ -8,6 +9,6 @@ lint:
 	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck test/documentation-test
 
 install:
-	install src/semver /usr/local/bin
+	install src/semver ${DESTDIR}${PREFIX}/bin
 
 .PHONY: test install lint
