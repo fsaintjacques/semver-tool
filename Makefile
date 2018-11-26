@@ -9,6 +9,6 @@ lint:
 	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck test/documentation-test
 
 install:
-	install src/semver ${PREFIX}/bin
+	install src/semver ${DESTDIR}${PREFIX}/bin
 
 .PHONY: test install lint
