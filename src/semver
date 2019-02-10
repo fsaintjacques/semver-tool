@@ -2,7 +2,7 @@
 
 set -o errexit -o nounset -o pipefail
 
-SEMVER_REGEX="^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
+SEMVER_REGEX="^[vV]?(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(\\-[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?(\\+[0-9A-Za-z-]+(\\.[0-9A-Za-z-]+)*)?$"
 
 PROG=semver
 PROG_VERSION=2.1.0
@@ -19,7 +19,7 @@ Arguments:
   <version>  A version must match the following regex pattern:
              \"${SEMVER_REGEX}\".
              In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
-             where X, Y and Z are positive integers, PRERELEASE is an optionnal
+             where X, Y and Z are positive integers, PRERELEASE is an optional
              string composed of alphanumeric characters and hyphens and
              BUILD is also an optional string composed of alphanumeric
              characters and hyphens.
@@ -36,7 +36,7 @@ Options:
 
 Commands:
   bump     Bump <version> by one of major, minor, patch, prerel, build
-           or a forced potentialy conflicting version. The bumped version is
+           or a forced potentially conflicting version. The bumped version is
            shown to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the
@@ -45,7 +45,6 @@ Commands:
 
   get      Extract given part of <version>, where part is one of major, minor,
            patch, prerel, build."
-
 
 function error {
   echo -e "$1" >&2
@@ -84,7 +83,7 @@ function compare-version {
   validate-version "$1" V
   validate-version "$2" V_
 
-  # MAJOR, MINOR and PATCH should compare numericaly
+  # MAJOR, MINOR and PATCH should compare numerically
   for i in 0 1 2; do
     local diff=$((${V[$i]} - ${V_[$i]}))
     if [[ $diff -lt 0 ]]; then
