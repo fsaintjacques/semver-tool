@@ -13,7 +13,7 @@ function list_tests() {
 
 function expected_result_for_test() {
   local test=$1
-  grep -A1 "$test" "$README" | tail -1 | sed -e 's/^ *//'
+  grep -A1 "$test\$" "$README" | tail -1 | sed -e 's/^ *//'
 }
 
 
