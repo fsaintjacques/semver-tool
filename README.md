@@ -2,7 +2,7 @@ The semver shell utility
 ========================
 
 semver is a little tool to manipulate version bumping in a project that
-follows the [semver] specification. Its use are:
+follows the [semver 2.x][semver] specification. Its use are:
 
   - bump version
   - compare version
