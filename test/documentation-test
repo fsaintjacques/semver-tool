@@ -16,6 +16,9 @@ function expected_result_for_test() {
   grep -A1 "$test\$" "$README" | tail -1 | sed -e 's/^ *//'
 }
 
+# TODO: how to assert that certain input versions will fail the version-check?
+#   for example the command `semver get major 01.2.3`
+#   must fail, as the given version is not valid.
 
 list_tests |
   while read -r unit_test; do
