@@ -177,6 +177,7 @@ function command-get {
     local patch="${parts[2]}"
     local prerel="${parts[3]:1}"
     local build="${parts[4]:1}"
+    local release="${major}.${minor}.${patch}"
 
     case "$part" in
         major|minor|patch|release|prerel|build) echo "${!part}" ;;

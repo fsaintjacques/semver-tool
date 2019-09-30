@@ -22,7 +22,7 @@ usage
 
 ```
 Usage:
-  semver bump (major|minor|patch|prerel <prerel>|build <build>) <version>
+  semver bump (major|minor|patch|release|prerel <prerel>|build <build>) <version>
   semver compare <version> <other_version>
   semver get (major|minor|patch|release|prerel|build) <version>
   semver --help
@@ -30,9 +30,9 @@ Usage:
 
 Arguments:
   <version>  A version must match the following regex pattern:
-             \"${SEMVER_REGEX}\".
+             "^[vV]?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$".
              In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
-             where X, Y and Z are positive integers, PRERELEASE is an optionnal
+             where X, Y and Z are positive integers, PRERELEASE is an optional
              string composed of alphanumeric characters and hyphens and
              BUILD is also an optional string composed of alphanumeric
              characters and hyphens.
@@ -49,7 +49,7 @@ Options:
 
 Commands:
   bump     Bump <version> by one of major, minor, patch, prerel, build
-           or a forced potentialy conflicting version. The bumped version is
+           or a forced potentially conflicting version. The bumped version is
            shown to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the
@@ -109,3 +109,5 @@ Extract version part
     alpha.4.5
     $ semver get build 1.2.3-rc.4+build.567
     build.567
+    $ semver get release 1.2.3-rc.4+build.567
+    1.2.3
