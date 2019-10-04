@@ -19,32 +19,32 @@ Arguments:
   <version>  A version must match the following regex pattern:
              \"${SEMVER_REGEX}\".
              In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
-             where X, Y and Z are positive integers, PRERELEASE is an optional
-             string composed of alphanumeric characters and hyphens and
-             BUILD is also an optional string composed of alphanumeric
-             characters and hyphens.
+             where X, Y and Z are positive integers, and PRERELEASE and BUILD
+             are optional strings composed of alphanumeric characters, dots,
+             hyphens and underscores.
 
   <other_version>  See <version> definition.
 
-  <prerel>  String that must be composed of alphanumeric characters and hyphens.
+  <prerel>  String that must be composed of alphanumeric characters, dots,
+            hyphens and underscores.
 
-  <build>   String that must be composed of alphanumeric characters and hyphens.
+  <build>   String that must be composed of alphanumeric characters, dots,
+            hyphens and underscores.
 
 Options:
   -v, --version          Print the version of this tool.
   -h, --help             Print this help message.
 
 Commands:
-  bump     Bump <version> by one of major, minor, patch, prerel, build
-           or a forced potentially conflicting version. The bumped version is
-           shown to stdout.
+  bump     Bump <version> by one of major, minor, patch, release, prerel, build.
+           The bumped version is output to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
            older.
 
   get      Extract given part of <version>, where part is one of major, minor,
-           patch, prerel, build."
+           patch, release, prerel, build."
 
 function error {
   echo -e "$1" >&2
@@ -175,6 +175,7 @@ function command-get {
     local major="${parts[0]}"
     local minor="${parts[1]}"
     local patch="${parts[2]}"
+    local release="${major}.${minor}.${patch}"
     local prerel="${parts[3]:1}"
     local build="${parts[4]:1}"
 

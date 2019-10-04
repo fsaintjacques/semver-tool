@@ -22,7 +22,7 @@ usage
 
 ```
 Usage:
-  semver bump (major|minor|patch|prerel <prerel>|build <build>) <version>
+  semver bump (major|minor|patch|release|prerel <prerel>|build <build>) <version>
   semver compare <version> <other_version>
   semver get (major|minor|patch|release|prerel|build) <version>
   semver --help
@@ -32,32 +32,32 @@ Arguments:
   <version>  A version must match the following regex pattern:
              \"${SEMVER_REGEX}\".
              In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
-             where X, Y and Z are positive integers, PRERELEASE is an optionnal
-             string composed of alphanumeric characters and hyphens and
-             BUILD is also an optional string composed of alphanumeric
-             characters and hyphens.
+             where X, Y and Z are positive integers, and PRERELEASE and BUILD
+             are optional strings composed of alphanumeric characters, dots,
+             hyphens and underscores.
 
   <other_version>  See <version> definition.
 
-  <prerel>  String that must be composed of alphanumeric characters and hyphens.
+  <prerel>  String that must be composed of alphanumeric characters, dots,
+            hyphens and underscores.
 
-  <build>   String that must be composed of alphanumeric characters and hyphens.
+  <build>   String that must be composed of alphanumeric characters, dots,
+            hyphens and underscores.
 
 Options:
   -v, --version          Print the version of this tool.
   -h, --help             Print this help message.
 
 Commands:
-  bump     Bump <version> by one of major, minor, patch, prerel, build
-           or a forced potentialy conflicting version. The bumped version is
-           shown to stdout.
+  bump     Bump <version> by one of major, minor, patch, release, prerel, build.
+           The bumped version is output to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
            older.
 
   get      Extract given part of <version>, where part is one of major, minor,
-           patch, prerel, build.
+           patch, release, prerel, build.
 ```
 
 examples
@@ -103,6 +103,10 @@ Extract version part
     2
     $ semver get major 1.2.3
     1
+    $ semver get release 1.2.3-rc.4
+    1.2.3
+    $ semver get release 1.2.3+build.567
+    1.2.3
     $ semver get prerel 1.2.3-rc.4
     rc.4
     $ semver get prerel 1.2.3-alpha.4.5
