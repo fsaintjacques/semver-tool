@@ -8,7 +8,7 @@ follows the [semver 2.x][semver] specification. Its use are:
   - compare version
   - extract specific version part
 
-It can be combined `git` pre-commit hooks to guarantee a correct versioning.
+It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 
 [semver]: https://github.com/mojombo/semver
 
@@ -29,35 +29,44 @@ Usage:
   semver --version
 
 Arguments:
-  <version>  A version must match the following regex pattern:
-             "^[vV]?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$".
-             In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
-             where X, Y and Z are positive integers, PRERELEASE is an optional
-             string composed of alphanumeric characters and hyphens and
-             BUILD is also an optional string composed of alphanumeric
-             characters and hyphens.
+  <version>  A version must match the following regular expression:
+             "^[vV]?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
+             In English:
+	     -- The version must match X.Y.Z[-PRERELEASE][+BUILD]
+                where X, Y and Z are non-negative integers.
+	     -- PRERELEASE is a dot separated sequence of non-negative integers and/or
+	        identifiers composed of alphanumeric characters and hyphens (with
+		at least one non-digit). Numeric identifiers must not have leading
+		zeros. A hyphen ("-") introduces this optional part.
+	     -- BUILD is a dot separated sequence of identifiers composed of alphanumeric
+	        characters and hyphens. A plus ("+") introduces this optional part.
 
   <other_version>  See <version> definition.
 
-  <prerel>  String that must be composed of alphanumeric characters and hyphens.
+  <prerel>  A string as defined by PRERELEASE above.
 
-  <build>   String that must be composed of alphanumeric characters and hyphens.
+  <build>   A string as defined by BUILD above.
 
 Options:
   -v, --version          Print the version of this tool.
   -h, --help             Print this help message.
 
 Commands:
-  bump     Bump <version> by one of major, minor, patch, prerel, build
-           or a forced potentially conflicting version. The bumped version is
-           shown to stdout.
+  bump     Bump by one of major, minor, patch; zeroing or removing
+           subsequent parts. "bump prerel" sets the PRERELEASE part and
+	   removes any BUILD part. "bump build" sets the BUILD part.
+	   "bump release" removes any PRERELEASE or BUILD parts.
+           The bumped version is written to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
-           older.
+           older. The BUILD part is not used in comparisons.
 
   get      Extract given part of <version>, where part is one of major, minor,
-           patch, prerel, build.
+           patch, prerel, build, or release.
+
+See also:
+  https://semver.org -- Semantic Versioning 2.0.0
 ```
 
 examples
@@ -79,14 +88,14 @@ Basic bumping operations
     1.0.1-rc1.1.0
     $ semver bump build build.051 1.0.1-rc1.1.0
     1.0.1-rc1.1.0+build.051
-    $ semver bump release 0.1.0-SNAPSHOT
+    $ semver bump release v0.1.0-SNAPSHOT
     0.1.0
 
 Comparing version for scripting
 
     $ semver compare 1.0.1-rc1.1.0+build.051 1.0.1
     -1
-    $ semver compare 1.0.1-rc1.1.0+build.051 1.0.1-rc1.1.0
+    $ semver compare v1.0.1-rc1.1.0+build.051 V1.0.1-rc1.1.0
     0
     $ semver compare 1.0.1-rc1.1.0+build.051 1.0.1-rc1.1.0+build.052
     0
@@ -94,7 +103,7 @@ Comparing version for scripting
     1
     $ semver compare 10.1.4-rc4 10.4.2-rc1
     -1
-    $ semver compare 10.1.4-rc4 10.4.2-01234
+    $ semver compare 10.1.4-rc4 10.4.2-1234
     -1
 
 Extract version part
