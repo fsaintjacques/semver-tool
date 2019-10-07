@@ -20,15 +20,15 @@ Arguments:
              \"${SEMVER_REGEX}\".
              In english, the version must match X.Y.Z(-PRERELEASE)(+BUILD)
              where X, Y and Z are positive integers, PRERELEASE is an optional
-             string composed of alphanumeric characters and hyphens and
+             string composed of alphanumeric characters, dots and hyphens and
              BUILD is also an optional string composed of alphanumeric
-             characters and hyphens.
+             characters, dots and hyphens.
 
   <other_version>  See <version> definition.
 
-  <prerel>  String that must be composed of alphanumeric characters and hyphens.
+  <prerel>  String that must be composed of alphanumeric characters, dots and hyphens.
 
-  <build>   String that must be composed of alphanumeric characters and hyphens.
+  <build>   String that must be composed of alphanumeric characters, dots and hyphens.
 
 Options:
   -v, --version          Print the version of this tool.
@@ -62,6 +62,10 @@ function usage-version {
 
 function validate-version {
   local version=$1
+  # TODO: semver 2.x also restricts numeric prerel as follows:
+  #   > Numeric identifiers MUST NOT include leading zeroes.
+  #   No definition of "numeric identifiers" is given by semver 2.x.
+  #   This restriction is not yet implemented by this script.
   if [[ "$version" =~ $SEMVER_REGEX ]]; then
     # if a second argument is passed, store the result in var named by $2
     if [ "$#" -eq "2" ]; then

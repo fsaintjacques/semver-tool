@@ -2,7 +2,7 @@ The semver shell utility
 ========================
 
 semver is a little tool to manipulate version bumping in a project that
-follows the [semver] specification. Its use are:
+follows the [semver 2.x][semver] specification. Its use are:
 
   - bump version
   - compare version
@@ -94,6 +94,8 @@ Comparing version for scripting
     1
     $ semver compare 10.1.4-rc4 10.4.2-rc1
     -1
+    $ semver compare 10.1.4-rc4 10.4.2-01234
+    -1
 
 Extract version part
 
@@ -109,3 +111,9 @@ Extract version part
     alpha.4.5
     $ semver get build 1.2.3-rc.4+build.567
     build.567
+    $ semver get prerel 1.2.3+build.568
+    
+    $ semver get prerel 1.2.3-rc.4+build.569
+    rc.4
+    $ semver get prerel 1.2.3-rc-4+build.570
+    rc-4
