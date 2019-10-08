@@ -14,7 +14,7 @@ SEMVER_REGEX="\
 (\\+${FIELD}(\\.${FIELD})*)?$"
 
 PROG=semver
-PROG_VERSION="3.0.0-rc1"
+PROG_VERSION="3.0.0"
 
 USAGE="\
 Usage:
