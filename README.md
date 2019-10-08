@@ -32,14 +32,14 @@ Arguments:
   <version>  A version must match the following regular expression:
              "^[vV]?(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(\-(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(\.(0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(\+[0-9A-Za-z-]+(\.[0-9A-Za-z-]+)*)?$"
              In English:
-	     -- The version must match X.Y.Z[-PRERELEASE][+BUILD]
+             -- The version must match X.Y.Z[-PRERELEASE][+BUILD]
                 where X, Y and Z are non-negative integers.
-	     -- PRERELEASE is a dot separated sequence of non-negative integers and/or
-	        identifiers composed of alphanumeric characters and hyphens (with
-		at least one non-digit). Numeric identifiers must not have leading
-		zeros. A hyphen ("-") introduces this optional part.
-	     -- BUILD is a dot separated sequence of identifiers composed of alphanumeric
-	        characters and hyphens. A plus ("+") introduces this optional part.
+             -- PRERELEASE is a dot separated sequence of non-negative integers and/or
+                identifiers composed of alphanumeric characters and hyphens (with
+                at least one non-digit). Numeric identifiers must not have leading
+                zeros. A hyphen ("-") introduces this optional part.
+             -- BUILD is a dot separated sequence of identifiers composed of alphanumeric
+                characters and hyphens. A plus ("+") introduces this optional part.
 
   <other_version>  See <version> definition.
 
@@ -54,8 +54,8 @@ Options:
 Commands:
   bump     Bump by one of major, minor, patch; zeroing or removing
            subsequent parts. "bump prerel" sets the PRERELEASE part and
-	   removes any BUILD part. "bump build" sets the BUILD part.
-	   "bump release" removes any PRERELEASE or BUILD parts.
+           removes any BUILD part. "bump build" sets the BUILD part.
+           "bump release" removes any PRERELEASE or BUILD parts.
            The bumped version is written to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the

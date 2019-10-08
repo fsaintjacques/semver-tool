@@ -28,14 +28,14 @@ Arguments:
   <version>  A version must match the following regular expression:
              \"${SEMVER_REGEX}\"
              In English:
-	     -- The version must match X.Y.Z[-PRERELEASE][+BUILD]
+             -- The version must match X.Y.Z[-PRERELEASE][+BUILD]
                 where X, Y and Z are non-negative integers.
-	     -- PRERELEASE is a dot separated sequence of non-negative integers and/or
-	        identifiers composed of alphanumeric characters and hyphens (with
-		at least one non-digit). Numeric identifiers must not have leading
-		zeros. A hyphen (\"-\") introduces this optional part.
-	     -- BUILD is a dot separated sequence of identifiers composed of alphanumeric
-	        characters and hyphens. A plus (\"+\") introduces this optional part.
+             -- PRERELEASE is a dot separated sequence of non-negative integers and/or
+                identifiers composed of alphanumeric characters and hyphens (with
+                at least one non-digit). Numeric identifiers must not have leading
+                zeros. A hyphen (\"-\") introduces this optional part.
+             -- BUILD is a dot separated sequence of identifiers composed of alphanumeric
+                characters and hyphens. A plus (\"+\") introduces this optional part.
 
   <other_version>  See <version> definition.
 
@@ -50,8 +50,8 @@ Options:
 Commands:
   bump     Bump by one of major, minor, patch; zeroing or removing
            subsequent parts. \"bump prerel\" sets the PRERELEASE part and
-	   removes any BUILD part. \"bump build\" sets the BUILD part.
-	   \"bump release\" removes any PRERELEASE or BUILD parts.
+           removes any BUILD part. \"bump build\" sets the BUILD part.
+           \"bump release\" removes any PRERELEASE or BUILD parts.
            The bumped version is written to stdout.
 
   compare  Compare <version> with <other_version>, output to stdout the
@@ -80,10 +80,6 @@ function usage-version {
 
 function validate-version {
   local version=$1
-  # TODO: semver 2.x also restricts numeric prerel as follows:
-  #   > Numeric identifiers MUST NOT include leading zeroes.
-  #   No definition of "numeric identifiers" is given by semver 2.x.
-  #   This restriction is not yet implemented by this script.
   if [[ "$version" =~ $SEMVER_REGEX ]]; then
     # if a second argument is passed, store the result in var named by $2
     if [ "$#" -eq "2" ]; then
@@ -101,21 +97,21 @@ function validate-version {
   fi
 }
 
-function isNAT {
+function is-nat {
     [[ "$1" =~ ^($NAT)$ ]]
 }
 
-function isNULL {
+function is-null {
     [ -z "$1" ]
 }
 
-function orderNAT {
+function order-nat {
     [ "$1" -lt "$2" ] && { echo -1 ; return ; }
     [ "$1" -gt "$2" ] && { echo 1 ; return ; }
     echo 0
 }
 
-function orderSTRING {
+function order-string {
     [[ $1 < $2 ]] && { echo -1 ; return ; }
     [[ $1 > $2 ]] && { echo 1 ; return ; }
     echo 0
@@ -139,24 +135,24 @@ function compare-fields {
 
     while true
     do
-	[ $order -ne 0 ] && { echo $order ; return ; }
+        [ $order -ne 0 ] && { echo $order ; return ; }
 
-	: $(( i++ ))
-	left="${leftfield[$i]}"
-	right="${rightfield[$i]}"
+        : $(( i++ ))
+        left="${leftfield[$i]}"
+        right="${rightfield[$i]}"
 
-	isNULL "$left" && isNULL "$right" && { echo 0  ; return ; } 
-	isNULL "$left"                    && { echo -1 ; return ; } 
-	                  isNULL "$right" && { echo 1  ; return ; } 
+        is-null "$left" && is-null "$right" && { echo 0  ; return ; }
+        is-null "$left"                     && { echo -1 ; return ; }
+                           is-null "$right" && { echo 1  ; return ; }
 
-	isNAT "$left" && isNAT "$right" && { order=$(orderNAT "$left" "$right") ; continue ; } 
-	isNAT "$left"                   && { echo -1 ; return ; } 
-	                 isNAT "$right" && { echo 1  ; return ; } 
-	                                   { order=$(orderSTRING "$left" "$right") ; continue ; } 
+        is-nat "$left" &&  is-nat "$right" && { order=$(order-nat "$left" "$right") ; continue ; }
+        is-nat "$left"                     && { echo -1 ; return ; }
+                           is-nat "$right" && { echo 1  ; return ; }
+                                              { order=$(order-string "$left" "$right") ; continue ; }
     done
 }
 
-# shellcheck disable=SC2206	# checked by "validate"; ok to expand prerel id's into array
+# shellcheck disable=SC2206     # checked by "validate"; ok to expand prerel id's into array
 function compare-version {
   local order
   validate-version "$1" V
@@ -182,7 +178,7 @@ function compare-version {
 
   [ -z "$prerel" ] && [ -z "$prerel_" ] && { echo 0  ; return ; }
   [ -z "$prerel" ]                      && { echo 1  ; return ; }
-		      [ -z "$prerel_" ] && { echo -1 ; return ; }
+                      [ -z "$prerel_" ] && { echo -1 ; return ; }
 
   # otherwise, compare the pre-release id's
 
@@ -234,7 +230,7 @@ function command-compare {
     *) usage-help ;;
   esac
 
-  set +u			# need unset array element to evaluate to null
+  set +u                        # need unset array element to evaluate to null
   compare-version "$v" "$v_"
   exit 0
 }
