@@ -13,7 +13,7 @@ It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 [semver]: https://github.com/mojombo/semver
 
 [![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=master)](https://travis-ci.org/fsaintjacques/semver-tool)
-[![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/2.0.0)
+[![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/3.0.0)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://github.com/fsaintjacques/semver-tool/blob/develop/LICENSE)
 
 
