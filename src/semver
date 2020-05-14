@@ -14,7 +14,7 @@ SEMVER_REGEX="\
 (\\+${FIELD}(\\.${FIELD})*)?$"
 
 PROG=semver
-PROG_VERSION="3.0.0"
+PROG_VERSION="3.1.0"
 
 USAGE="\
 Usage:
@@ -57,6 +57,10 @@ Commands:
   compare  Compare <version> with <other_version>, output to stdout the
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
            older. The BUILD part is not used in comparisons.
+
+  diff     Compare <version> with <other_version>, output to stdout the
+           difference between two versions by the release type (MAJOR, MINOR,
+           PATCH, PRERELEASE, BUILD).
 
   get      Extract given part of <version>, where part is one of major, minor,
            patch, prerel, build, or release.
@@ -235,6 +239,35 @@ function command-compare {
   exit 0
 }
 
+function command-diff {
+  validate-version "$1" v1_parts
+  # shellcheck disable=SC2154
+  local v1_major="${v1_parts[0]}"
+  local v1_minor="${v1_parts[1]}"
+  local v1_patch="${v1_parts[2]}"
+  local v1_prere="${v1_parts[3]}"
+  local v1_build="${v1_parts[4]}"
+
+  validate-version "$2" v2_parts
+  # shellcheck disable=SC2154
+  local v2_major="${v2_parts[0]}"
+  local v2_minor="${v2_parts[1]}"
+  local v2_patch="${v2_parts[2]}"
+  local v2_prere="${v2_parts[3]}"
+  local v2_build="${v2_parts[4]}"
+
+  if [ "${v1_major}" != "${v2_major}" ]; then
+    echo "major"
+  elif [ "${v1_minor}" != "${v2_minor}" ]; then
+    echo "minor"
+  elif [ "${v1_patch}" != "${v2_patch}" ]; then
+    echo "patch"
+  elif [ "${v1_prere}" != "${v2_prere}" ]; then
+    echo "prerelease"
+  elif [ "${v1_build}" != "${v2_build}" ]; then
+    echo "build"
+  fi
+}
 
 # shellcheck disable=SC2034
 function command-get {
@@ -274,5 +307,6 @@ case $1 in
   bump) shift; command-bump "$@";;
   get) shift; command-get "$@";;
   compare) shift; command-compare "$@";;
+  diff) shift; command-diff "$@";;
   *) echo "Unknown arguments: $*"; usage-help;;
 esac

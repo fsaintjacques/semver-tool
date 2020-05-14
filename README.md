@@ -62,6 +62,10 @@ Commands:
            following values: -1 if <other_version> is newer, 0 if equal, 1 if
            older. The BUILD part is not used in comparisons.
 
+  diff     Compare <version> with <other_version>, output to stdout the
+           difference between two versions by the release type (MAJOR, MINOR,
+           PATCH, PRERELEASE, BUILD).
+
   get      Extract given part of <version>, where part is one of major, minor,
            patch, prerel, build, or release.
 
@@ -123,7 +127,7 @@ Extract version part
     $ semver get release 1.2.3-rc.4+build.567
     1.2.3
     $ semver get prerel 1.2.3+build.568
-    
+
     $ semver get prerel 1.2.3-rc.4+build.569
     rc.4
     $ semver get prerel 1.2.3-rc-4+build.570
