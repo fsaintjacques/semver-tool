@@ -18,7 +18,7 @@ SEMVER="src/semver"
 #	A normal version number MUST take the form X.Y.Z where X, Y, and Z are non-negative
 #	integers, and MUST NOT contain leading zeroes. X is the major version, Y is the minor
 #	version, and Z is the patch version. Each element MUST increase numerically.
-#	For instance: 1.9.0 -> 1.10.0 -> 1.11.0.	
+#	For instance: 1.9.0 -> 1.10.0 -> 1.11.0.
 
 @test "normal version" {
 	result="$($SEMVER bump release 1.9.0)"
@@ -157,27 +157,27 @@ SEMVER="src/semver"
 }
 
 @test "bump invalid character in pre-release" {
-	run $SEMVER bump prerel "x.=.z.92" "1.0.0" 
+	run $SEMVER bump prerel "x.=.z.92" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump empty identifier in pre-release (embedded)" {
-	run $SEMVER bump prerel "x.7.z..92" "1.0.0" 
+	run $SEMVER bump prerel "x.7.z..92" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump empty identifier in pre-release (leading)" {
-	run $SEMVER bump prerel ".x.7.z.92" "1.0.0" 
+	run $SEMVER bump prerel ".x.7.z.92" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump empty identifier in pre-release (trailing)" {
-	run $SEMVER bump prerel "x.7.z.92." "1.0.0" 
+	run $SEMVER bump prerel "x.7.z.92." "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump pre-release to invalid version" {
-	run $SEMVER bump prerel "x.7.z.92" "1.00.0" 
+	run $SEMVER bump prerel "x.7.z.92" "1.00.0"
 	[ "$status" -eq 1 ]
 }
 
@@ -255,27 +255,27 @@ SEMVER="src/semver"
 }
 
 @test "bump invalid character in build-metadata: $" {
-	run $SEMVER bump build "7.z$.92" "1.0.0" 
+	run $SEMVER bump build "7.z$.92" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump invalid character in build-metadata: _" {
-	run $SEMVER bump build "7.z.92._" "1.0.0" 
+	run $SEMVER bump build "7.z.92._" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump empty identifier in build-metadata (embedded)" {
-	run $SEMVER bump build "7.z..92" "1.0.0" 
+	run $SEMVER bump build "7.z..92" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump empty identifier in build-metadata (leading)" {
-	run $SEMVER bump build ".x.7.z.92" "1.0.0" 
+	run $SEMVER bump build ".x.7.z.92" "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
 @test "bump empty identifier in build-metadata (trailing)" {
-	run $SEMVER bump build "z.92." "1.0.0" 
+	run $SEMVER bump build "z.92." "1.0.0"
 	[ "$status" -eq 1 ]
 }
 
@@ -381,3 +381,27 @@ SEMVER="src/semver"
 	[ "$result" = "0" ]
 }
 
+@test "diff versions (major)" {
+	result="$($SEMVER diff 1.2.3 2.3.4)"
+	[ "$result" = "major" ]
+}
+
+@test "diff versions (minor)" {
+	result="$($SEMVER diff 1.2.3 1.3.4)"
+	[ "$result" = "minor" ]
+}
+
+@test "diff versions (patch)" {
+	result="$($SEMVER diff 1.2.3 1.2.4)"
+	[ "$result" = "patch" ]
+}
+
+@test "diff versions (prerelease)" {
+	result="$($SEMVER diff 1.2.3-alpha 1.2.3-beta)"
+	[ "$result" = "prerelease" ]
+}
+
+@test "diff versions (equal)" {
+	result="$($SEMVER diff 1.2.3 1.2.3)"
+	[ "$result" = "" ]
+}
