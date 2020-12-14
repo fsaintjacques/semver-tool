@@ -2,18 +2,19 @@ The semver shell utility
 ========================
 
 semver is a little tool to manipulate version bumping in a project that
-follows the [semver 2.x][semver] specification. Its use are:
+follows the [semver 2.x][semver] specification. Its uses are:
 
   - bump version
-  - compare version
+  - compare versions
   - extract specific version part
+  - identify most significant difference between two versions
 
 It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 
 [semver]: https://github.com/mojombo/semver
 
 [![Build Status](https://travis-ci.org/fsaintjacques/semver-tool.svg?branch=master)](https://travis-ci.org/fsaintjacques/semver-tool)
-[![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/3.0.0)
+[![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/3.2.0)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://github.com/fsaintjacques/semver-tool/blob/develop/LICENSE)
 
 
@@ -22,8 +23,9 @@ usage
 
 ```
 Usage:
-  semver bump (major|minor|patch|release|prerel <prerel>|build <build>) <version>
+  semver bump (major|minor|patch|release|prerel [<prerel>]|build <build>) <version>
   semver compare <version> <other_version>
+  semver diff <version> <other_version>
   semver get (major|minor|patch|release|prerel|build) <version>
   semver --help
   semver --version
@@ -43,7 +45,8 @@ Arguments:
 
   <other_version>  See <version> definition.
 
-  <prerel>  A string as defined by PRERELEASE above.
+  <prerel>  A string as defined by PRERELEASE above. Or, it can be a PRERELEASE
+            prototype string (or empty) followed by a dot.
 
   <build>   A string as defined by BUILD above.
 
@@ -54,7 +57,10 @@ Options:
 Commands:
   bump     Bump by one of major, minor, patch; zeroing or removing
            subsequent parts. "bump prerel" sets the PRERELEASE part and
-           removes any BUILD part. "bump build" sets the BUILD part.
+           removes any BUILD part. A trailing dot in the <prerel> argument
+           introduces an incrementing numeric field which is added or
+           bumped. If no <prerel> argument is provided, an incrementing numeric
+           field is introduced/bumped. "bump build" sets the BUILD part.
            "bump release" removes any PRERELEASE or BUILD parts.
            The bumped version is written to stdout.
 
@@ -88,8 +94,14 @@ Basic bumping operations
     1.0.0
     $ semver bump patch 1.0.0
     1.0.1
-    $ semver bump prerel rc1.1.0 1.0.1
-    1.0.1-rc1.1.0
+    $ semver bump prerel rc.1 1.0.1
+    1.0.1-rc.1
+    $ semver bump prerel rc.. 1.2.0-beta2
+    1.2.0-rc.1
+    $ semver bump prerel 1.0.1-rc.1+build4423
+    1.0.1-rc.2
+    $ semver bump prerel beta. 1.1.0-beta2
+    1.1.0-beta3
     $ semver bump build build.051 1.0.1-rc1.1.0
     1.0.1-rc1.1.0+build.051
     $ semver bump release v0.1.0-SNAPSHOT
@@ -109,6 +121,15 @@ Comparing version for scripting
     -1
     $ semver compare 10.1.4-rc4 10.4.2-1234
     -1
+
+Find most significant difference
+
+    $ semver diff 1.0.1-rc1.1.0+build.051 1.0.1
+    prerelease
+    $ semver diff 10.1.4 10.1.4
+
+    $ semver diff 10.1.4-rc4 10.4.2-rc1
+    minor
 
 Extract version part
 

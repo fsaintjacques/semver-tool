@@ -14,12 +14,13 @@ SEMVER_REGEX="\
 (\\+${FIELD}(\\.${FIELD})*)?$"
 
 PROG=semver
-PROG_VERSION="3.1.0"
+PROG_VERSION="3.2.0"
 
 USAGE="\
 Usage:
-  $PROG bump (major|minor|patch|release|prerel <prerel>|build <build>) <version>
+  $PROG bump (major|minor|patch|release|prerel [<prerel>]|build <build>) <version>
   $PROG compare <version> <other_version>
+  $PROG diff <version> <other_version>
   $PROG get (major|minor|patch|release|prerel|build) <version>
   $PROG --help
   $PROG --version
@@ -39,7 +40,8 @@ Arguments:
 
   <other_version>  See <version> definition.
 
-  <prerel>  A string as defined by PRERELEASE above.
+  <prerel>  A string as defined by PRERELEASE above. Or, it can be a PRERELEASE
+            prototype string (or empty) followed by a dot.
 
   <build>   A string as defined by BUILD above.
 
@@ -50,7 +52,10 @@ Options:
 Commands:
   bump     Bump by one of major, minor, patch; zeroing or removing
            subsequent parts. \"bump prerel\" sets the PRERELEASE part and
-           removes any BUILD part. \"bump build\" sets the BUILD part.
+           removes any BUILD part. A trailing dot in the <prerel> argument
+           introduces an incrementing numeric field which is added or
+           bumped. If no <prerel> argument is provided, an incrementing numeric
+           field is introduced/bumped. \"bump build\" sets the BUILD part.
            \"bump release\" removes any PRERELEASE or BUILD parts.
            The bumped version is written to stdout.
 
@@ -189,12 +194,94 @@ function compare_version {
   compare_fields left right
 }
 
+# render_prerel -- return a prerel field with a trailing numeric string
+#                  usage: render_prerel numeric [prefix-string]
+#
+function render_prerel {
+    if [ -z "$2" ]
+    then
+        echo "${1}"
+    else
+        echo "${2}${1}"
+    fi
+}
+
+# extract_prerel -- extract prefix and trailing numeric portions of a pre-release part
+#                   usage: extract_prerel prerel prerel_parts
+#                   The prefix and trailing numeric parts are returned in "prerel_parts".
+#
+PREFIX_ALPHANUM='[.0-9A-Za-z-]*[.A-Za-z-]'
+DIGITS='[0-9][0-9]*'
+EXTRACT_REGEX="^(${PREFIX_ALPHANUM})*(${DIGITS})$"
+
+function extract_prerel {
+    local prefix; local numeric;
+
+    if [[ "$1" =~ $EXTRACT_REGEX ]]
+    then                                        # found prefix and trailing numeric parts
+        prefix="${BASH_REMATCH[1]}"
+        numeric="${BASH_REMATCH[2]}"
+    else                                        # no numeric part
+        prefix="${1}"
+        numeric=
+    fi
+
+    eval "$2=(\"$prefix\" \"$numeric\")"
+}
+
+# bump_prerel -- return the new pre-release part based on previous pre-release part
+#                and prototype for bump
+#                usage: bump_prerel proto previous
+#
+function bump_prerel {
+    local proto; local prev_prefix; local prev_numeric;
+
+    # case one: no trailing dot in prototype => simply replace previous with proto
+    if [[ ! ( "$1" =~ \.$ ) ]]
+    then
+        echo "$1"
+        return
+    fi
+
+    proto="${1%.}"                              # discard trailing dot marker from prototype
+
+    extract_prerel "${2#-}" prerel_parts        # extract parts of previous pre-release
+#   shellcheck disable=SC2154
+    prev_prefix="${prerel_parts[0]}"
+    prev_numeric="${prerel_parts[1]}"
+
+    # case two: bump or append numeric to previous pre-release part
+    if [ "$proto" == "+" ]                      # dummy "+" indicates no prototype argument provided
+    then
+        if [ -n "$prev_numeric" ]
+        then
+            : $(( ++prev_numeric ))             # previous pre-release is already numbered, bump it
+            render_prerel "$prev_numeric" "$prev_prefix"
+        else
+            render_prerel 1 "$prev_prefix"      # append starting number
+        fi
+        return
+    fi
+
+    # case three: set, bump, or append using prototype prefix
+    if [  "$prev_prefix" != "$proto" ]
+    then
+        render_prerel 1 "$proto"                # proto not same pre-release; set and start at '1'
+    elif [ -n "$prev_numeric" ]
+    then
+        : $(( ++prev_numeric ))                 # pre-release is numbered; bump it
+        render_prerel "$prev_numeric" "$prev_prefix"
+    else
+        render_prerel 1 "$prev_prefix"          # start pre-release at number '1'
+    fi
+}
+
 function command_bump {
   local new; local version; local sub_version; local command;
 
   case $# in
     2) case $1 in
-        major|minor|patch|release) command=$1; version=$2;;
+        major|minor|patch|prerel|release) command=$1; sub_version="+."; version=$2;;
         *) usage_help;;
        esac ;;
     3) case $1 in
@@ -217,7 +304,7 @@ function command_bump {
     minor) new="${major}.$((minor + 1)).0";;
     patch) new="${major}.${minor}.$((patch + 1))";;
     release) new="${major}.${minor}.${patch}";;
-    prerel) new=$(validate_version "${major}.${minor}.${patch}-${sub_version}");;
+    prerel) new=$(validate_version "${major}.${minor}.${patch}-$(bump_prerel "$sub_version" "$prere")");;
     build) new=$(validate_version "${major}.${minor}.${patch}${prere}+${sub_version}");;
     *) usage_help ;;
   esac
