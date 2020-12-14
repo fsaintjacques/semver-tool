@@ -171,11 +171,6 @@ SEMVER="src/semver"
 	[ "$status" -eq 1 ]
 }
 
-@test "bump empty identifier in pre-release (trailing)" {
-	run $SEMVER bump prerel "x.7.z.92." "1.0.0"
-	[ "$status" -eq 1 ]
-}
-
 @test "bump pre-release to invalid version" {
 	run $SEMVER bump prerel "x.7.z.92" "1.00.0"
 	[ "$status" -eq 1 ]
