@@ -10,8 +10,8 @@ unit-test:
 	docker run --rm -v "${ROOT}:/mnt" -w /mnt bats/bats:v1.1.0 test
 
 lint:
-	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck src/semver
-	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck test/documentation-test
+	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck --shell=bash src/semver
+	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck --shell=bash test/documentation-test
 
 install:
 	install src/semver ${DESTDIR}${PREFIX}/bin
