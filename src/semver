@@ -101,7 +101,7 @@ function validate_version {
   fi
 }
 
-function is:_nat {
+function is_nat {
     [[ "$1" =~ ^($NAT)$ ]]
 }
 
@@ -149,9 +149,9 @@ function compare_fields {
         is_null "$left"                     && { echo -1 ; return ; }
                            is_null "$right" && { echo 1  ; return ; }
 
-        is:_nat "$left" &&  is:_nat "$right" && { order=$(order_nat "$left" "$right") ; continue ; }
-        is:_nat "$left"                     && { echo -1 ; return ; }
-                           is:_nat "$right" && { echo 1  ; return ; }
+        is_nat "$left" &&  is_nat "$right" && { order=$(order_nat "$left" "$right") ; continue ; }
+        is_nat "$left"                     && { echo -1 ; return ; }
+                           is_nat "$right" && { echo 1  ; return ; }
                                               { order=$(order_string "$left" "$right") ; continue ; }
     done
 }
