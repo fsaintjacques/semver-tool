@@ -14,7 +14,7 @@ It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 [semver]: https://github.com/mojombo/semver
 
 [![Unit Tests and Linters](https://github.com/fsaintjacques/semver-tool/actions/workflows/ci.yaml/badge.svg)](https://github.com/fsaintjacques/semver-tool/actions/workflows/ci.yaml)
-[![Stable Version](https://img.shields.io/github/tag/fsaintjacques/semver-tool.svg)](https://github.com/fsaintjacques/semver-tool/tree/3.2.0)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/fsaintjacques/semver-tool)](https://github.com/fsaintjacques/semver-tool/releases/latest)
 [![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://github.com/fsaintjacques/semver-tool/blob/develop/LICENSE)
 
 
