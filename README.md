@@ -15,7 +15,7 @@ It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 
 [![Unit Tests and Linters](https://github.com/fsaintjacques/semver-tool/actions/workflows/ci.yaml/badge.svg)](https://github.com/fsaintjacques/semver-tool/actions/workflows/ci.yaml)
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/fsaintjacques/semver-tool)](https://github.com/fsaintjacques/semver-tool/releases/latest)
-[![License](https://img.shields.io/badge/license-GPL--3.0-blue.svg?style=flat)](https://github.com/fsaintjacques/semver-tool/blob/develop/LICENSE)
+[![License](https://shields.io/badge/license-Apache%202-blue)](https://github.com/fsaintjacques/semver-tool/blob/master/LICENSE)
 
 
 usage
