@@ -17,6 +17,42 @@ It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 [![GitHub release (latest by date)](https://img.shields.io/github/v/release/fsaintjacques/semver-tool)](https://github.com/fsaintjacques/semver-tool/releases/latest)
 [![License](https://shields.io/badge/license-Apache%202-blue)](https://github.com/fsaintjacques/semver-tool/blob/master/LICENSE)
 
+installation
+-----
+
+The semver tool can be downloaded from github, made executable and added to your path with these commands:
+
+```bash
+# Download the script and save it to /usr/local/bin
+wget -O /usr/local/bin/semver \
+  https://raw.githubusercontent.com/fsaintjacques/semver-tool/master/src/semver
+
+# Make script executable
+chmod +x /usr/local/bin/semver
+
+# Prove it works
+semver --version
+# semver: 3.2.0
+```
+
+The semver tool can also be installed with the [asdf version manager](https://asdf-vm.com/) with [this plugin](https://github.com/mathew-fleisch/asdf-semver), which automates the process of downloading and installing release binaries from github. With asdf already installed, use the following commands to install the semver tool
+
+```bash
+# Add the semver plugin to asdf
+asdf plugin add semver
+
+# Show all installable versions
+asdf list-all semver
+
+# Install specific version
+asdf install semver latest
+
+# Set a version globally (on your ~/.tool-versions file)
+asdf global semver latest
+
+# Now semver commands are available
+semver --version
+```
 
 usage
 -----
