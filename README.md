@@ -112,8 +112,9 @@ Commands:
   get       Extract given part of <version>, where part is one of major, minor,
             patch, prerel, build, or release.
 
-  validate  Validate if <version> is a valid SEMVER, ouput to stdout valid or
-            invalid. See <version> definition.
+  validate  Validate if <version> follows the SEMVER pattern (see <version>
+            definition). Print 'valid' to stdout if the version is valid, otherwise
+            print 'invalid'.
 
 See also:
   https://semver.org -- Semantic Versioning 2.0.0
