@@ -63,6 +63,7 @@ Usage:
   semver compare <version> <other_version>
   semver diff <version> <other_version>
   semver get (major|minor|patch|release|prerel|build) <version>
+  semver validate <version>
   semver --help
   semver --version
 
@@ -91,25 +92,29 @@ Options:
   -h, --help             Print this help message.
 
 Commands:
-  bump     Bump by one of major, minor, patch; zeroing or removing
-           subsequent parts. "bump prerel" sets the PRERELEASE part and
-           removes any BUILD part. A trailing dot in the <prerel> argument
-           introduces an incrementing numeric field which is added or
-           bumped. If no <prerel> argument is provided, an incrementing numeric
-           field is introduced/bumped. "bump build" sets the BUILD part.
-           "bump release" removes any PRERELEASE or BUILD parts.
-           The bumped version is written to stdout.
+  bump      Bump by one of major, minor, patch; zeroing or removing
+            subsequent parts. "bump prerel" sets the PRERELEASE part and
+            removes any BUILD part. A trailing dot in the <prerel> argument
+            introduces an incrementing numeric field which is added or
+            bumped. If no <prerel> argument is provided, an incrementing numeric
+            field is introduced/bumped. "bump build" sets the BUILD part.
+            "bump release" removes any PRERELEASE or BUILD parts.
+            The bumped version is written to stdout.
 
-  compare  Compare <version> with <other_version>, output to stdout the
-           following values: -1 if <other_version> is newer, 0 if equal, 1 if
-           older. The BUILD part is not used in comparisons.
+  compare   Compare <version> with <other_version>, output to stdout the
+            following values: -1 if <other_version> is newer, 0 if equal, 1 if
+            older. The BUILD part is not used in comparisons.
 
-  diff     Compare <version> with <other_version>, output to stdout the
-           difference between two versions by the release type (MAJOR, MINOR,
-           PATCH, PRERELEASE, BUILD).
+  diff      Compare <version> with <other_version>, output to stdout the
+            difference between two versions by the release type (MAJOR, MINOR,
+            PATCH, PRERELEASE, BUILD).
 
-  get      Extract given part of <version>, where part is one of major, minor,
-           patch, prerel, build, or release.
+  get       Extract given part of <version>, where part is one of major, minor,
+            patch, prerel, build, or release.
+
+  validate  Validate if <version> follows the SEMVER pattern (see <version>
+            definition). Print 'valid' to stdout if the version is valid, otherwise
+            print 'invalid'.
 
 See also:
   https://semver.org -- Semantic Versioning 2.0.0
@@ -189,3 +194,10 @@ Extract version part
     rc.4
     $ semver get prerel 1.2.3-rc-4+build.570
     rc-4
+
+Validate
+
+    $ semver validate 1.0.0
+    valid
+    $ semver validate 1
+    invalid
