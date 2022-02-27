@@ -7,7 +7,7 @@ doc-test:
 	test/documentation-test
 
 unit-test:
-	docker run --rm -v "${ROOT}:/mnt" -w /mnt bats/bats:v1.1.0 test
+	docker run --rm -v "${ROOT}:/mnt" -w /mnt bats/bats:1.6.0 test
 
 lint:
 	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck --shell=bash src/semver
