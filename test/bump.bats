@@ -51,6 +51,11 @@ SEMVER="src/semver"
 	[ "$result" = "0.2.1-rc.1" ]
 }
 
+@test "bump prerelease" {
+	result="$($SEMVER bump prerelease rc.1 0.2.1)"
+	[ "$result" = "0.2.1-rc.1" ]
+}
+
 @test "bump prerel (replace and strip build metadata)" {
 	result="$($SEMVER bump prerel rc.1 0.2.1-0.2+b13)"
 	[ "$result" = "0.2.1-rc.1" ]
