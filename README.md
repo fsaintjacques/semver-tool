@@ -54,6 +54,12 @@ asdf global semver latest
 semver --version
 ```
 
+The semver tool can also be installed with [bpkg](https://github.com/bpkg/bpkg) by running:
+
+```sh
+bpkg install -g semver-tool
+```
+
 usage
 -----
 
