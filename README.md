@@ -54,6 +54,8 @@ asdf global semver latest
 semver --version
 ```
 
+For an example of how to use semver in a github-action, checkout the [ci action](.github/workflows/ci.yaml) in this repository.
+
 usage
 -----
 
