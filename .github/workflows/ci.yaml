@@ -27,11 +27,13 @@ jobs:
 
       - name: Display semver help
         run: |
-          echo "Use semver locally or in your workflow"
+          echo "Use semver locally or in your workflow!"
           echo "asdf plugin add semver"
           echo "asdf install semver latest"
           echo "asdf global semver latest"
+          echo "semver --version"
           semver --version
+          echo "semver --help"
           semver --help
 
       - name: Shellcheck linter
