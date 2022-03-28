@@ -25,8 +25,12 @@ jobs:
             shellcheck 0.8.0
             semver 3.3.0
 
-      - name: Display Help
+      - name: Display semver help
         run: |
+          echo "Use semver locally or in your workflow"
+          echo "asdf plugin add semver"
+          echo "asdf install semver latest"
+          echo "asdf global semver latest"
           semver --version
           semver --help
 
