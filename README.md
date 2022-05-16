@@ -8,6 +8,7 @@ follows the [semver 2.x][semver] specification. Its uses are:
   - compare versions
   - extract specific version part
   - identify most significant difference between two versions
+  - validate version syntax
 
 It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 
@@ -20,7 +21,7 @@ It can be combined with `git` pre-commit hooks to guarantee correct versioning.
 installation
 -----
 
-The semver tool can be downloaded from github, made executable and added to your path with these commands:
+The semver tool can be downloaded from github and made executable with these commands:
 
 ```bash
 # Download the script and save it to /usr/local/bin
@@ -32,33 +33,12 @@ chmod +x /usr/local/bin/semver
 
 # Prove it works
 semver --version
-# semver: 3.2.0
+# semver: 3.3.0
 ```
 
-The semver tool can also be installed with the [asdf version manager](https://asdf-vm.com/) with [this plugin](https://github.com/mathew-fleisch/asdf-semver), which automates the process of downloading and installing release binaries from github. With asdf already installed, use the following commands to install the semver tool
+Most likely, you will want to insure that the directory containing `semver` is on your `PATH`.
 
-```bash
-# Add the semver plugin to asdf
-asdf plugin add semver
-
-# Show all installable versions
-asdf list-all semver
-
-# Install specific version
-asdf install semver latest
-
-# Set a version globally (on your ~/.tool-versions file)
-asdf global semver latest
-
-# Now semver commands are available
-semver --version
-```
-
-The semver tool can also be installed with [bpkg](https://github.com/bpkg/bpkg) by running:
-
-```sh
-bpkg install -g semver-tool
-```
+See [installation alternatives](#installation-alternatives) below.
 
 usage
 -----
@@ -207,3 +187,32 @@ Validate
     valid
     $ semver validate 1
     invalid
+
+installation alternatives
+-------------------------
+
+The manual installation of the semver tool is simple: just place a single file where you want it.
+Sometimes,
+however, alternative installation mechanisms might be desired. Two such methods are referenced below.
+
+### adsf
+
+[`asdf`](https://asdf-vm.com/) is a tool version manager.
+Once the `asdf` core is set up with your Shell configuration, plugins are installed to manage particular tools.
+
+The [semver plugin](https://github.com/mathew-fleisch/asdf-semver) handles the installation of the semver-tool:
+```sh
+asdf install semver latest
+```
+
+### bpkg
+
+[`bpkg`](https://github.com/bpkg/bpkg) is a lightweight bash package manager.
+It takes care of fetching the shell scripts, installing them appropriately,
+setting the execution permission and more.
+
+The semver tool can be installed by running:
+```sh
+bpkg install -g semver-tool
+```
+
