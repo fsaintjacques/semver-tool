@@ -197,13 +197,10 @@ however, alternative installation mechanisms might be desired. Two such methods 
 
 ### adsf
 
-[`asdf`](https://asdf-vm.com/) is a tool version manager.
-Once the `asdf` core is set up with your Shell configuration, plugins are installed to manage particular tools.
+`adsf` is a tool version manager.
+See the [`asdf`](https://asdf-vm.com/) documentation explaining how to set up adsf, install plugins and tools, and how to set/select versions.
 
-The [semver plugin](https://github.com/mathew-fleisch/asdf-semver) handles the installation of the semver-tool:
-```sh
-asdf install semver latest
-```
+The [semver plugin](https://github.com/mathew-fleisch/asdf-semver) handles the installation of the semver-tool. The README file contains an example installation.
 
 ### bpkg
 
