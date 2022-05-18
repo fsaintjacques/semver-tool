@@ -195,10 +195,10 @@ The manual installation of the semver tool is simple: just place a single file w
 Sometimes,
 however, alternative installation mechanisms might be desired. Two such methods are referenced below.
 
-### adsf
+### asdf
 
-`adsf` is a tool version manager.
-See the [`asdf`](https://asdf-vm.com/) documentation explaining how to set up adsf, install plugins and tools, and how to set/select versions.
+`asdf` is a tool version manager.
+See the [`asdf`](https://asdf-vm.com/) documentation explaining how to set up asdf, install plugins and tools, and how to set/select versions.
 
 The [semver plugin](https://github.com/mathew-fleisch/asdf-semver) handles the installation of the semver-tool. The README file contains an example installation.
 
