@@ -40,6 +40,8 @@ Most likely, you will want to insure that the directory containing `semver` is o
 
 See [installation alternatives](#installation-alternatives) below.
 
+For an example of how to use semver in a github-action, checkout the [ci action](.github/workflows/ci.yaml) in this repository.
+
 usage
 -----
 
