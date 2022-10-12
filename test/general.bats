@@ -47,3 +47,8 @@ SEMVER="src/semver"
 	run $SEMVER
 	[ "$status" -eq 1 ]
 }
+
+@test "ensure SPDX tag is present" {
+	run grep -E '^# SPDX-License-Identifier: Apache-2.0$' $SEMVER
+	[ "$status" -eq 0 ]
+}
