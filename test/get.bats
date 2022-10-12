@@ -24,6 +24,11 @@ SEMVER="src/semver"
 	[ "$result" = "rc1.-0" ]
 }
 
+@test "get prerelease" {
+	result="$($SEMVER get prerelease 0.2.1-rc1.-0+build-1234)"
+	[ "$result" = "rc1.-0" ]
+}
+
 @test "get build" {
 	result="$($SEMVER get build 0.2.1-rc1.0+build-0234)"
 	[ "$result" = "build-0234" ]

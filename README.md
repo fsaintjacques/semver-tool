@@ -5,8 +5,8 @@ semver is a little tool to manipulate version bumping in a project that
 follows the [semver 2.x][semver] specification. Its uses are:
 
   - bump version
-  - compare versions
   - extract specific version part
+  - compare versions
   - identify most significant difference between two versions
   - validate version syntax
 
@@ -47,10 +47,20 @@ usage
 
 ```
 Usage:
-  semver bump (major|minor|patch|release|prerel [<prerel>]|build <build>) <version>
+  semver bump major <version>
+  semver bump minor <version>
+  semver bump patch <version>
+  semver bump prerel|prerelease [<prerel>] <version>
+  semver bump build <build> <version>
+  semver bump release <version>
+  semver get major <version>
+  semver get minor <version>
+  semver get patch <version>
+  semver get prerel|prerelease <version>
+  semver get build <version>
+  semver get release <version>
   semver compare <version> <other_version>
   semver diff <version> <other_version>
-  semver get (major|minor|patch|release|prerel|build) <version>
   semver validate <version>
   semver --help
   semver --version
@@ -71,7 +81,7 @@ Arguments:
   <other_version>  See <version> definition.
 
   <prerel>  A string as defined by PRERELEASE above. Or, it can be a PRERELEASE
-            prototype string (or empty) followed by a dot.
+            prototype string followed by a dot.
 
   <build>   A string as defined by BUILD above.
 
@@ -81,13 +91,16 @@ Options:
 
 Commands:
   bump      Bump by one of major, minor, patch; zeroing or removing
-            subsequent parts. "bump prerel" sets the PRERELEASE part and
-            removes any BUILD part. A trailing dot in the <prerel> argument
-            introduces an incrementing numeric field which is added or
-            bumped. If no <prerel> argument is provided, an incrementing numeric
-            field is introduced/bumped. "bump build" sets the BUILD part.
-            "bump release" removes any PRERELEASE or BUILD parts.
+            subsequent parts. "bump prerel" (or its synonym "bump prerelease")
+            sets the PRERELEASE part and removes any BUILD part. A trailing dot
+            in the <prerel> argument introduces an incrementing numeric field
+            which is added or bumped. If no <prerel> argument is provided, an
+            incrementing numeric field is introduced/bumped. "bump build" sets
+            the BUILD part.  "bump release" removes any PRERELEASE or BUILD parts.
             The bumped version is written to stdout.
+
+  get       Extract given part of <version>, where part is one of major, minor,
+            patch, prerel (alternatively: prerelease), build, or release.
 
   compare   Compare <version> with <other_version>, output to stdout the
             following values: -1 if <other_version> is newer, 0 if equal, 1 if
@@ -96,9 +109,6 @@ Commands:
   diff      Compare <version> with <other_version>, output to stdout the
             difference between two versions by the release type (MAJOR, MINOR,
             PATCH, PRERELEASE, BUILD).
-
-  get       Extract given part of <version>, where part is one of major, minor,
-            patch, prerel, build, or release.
 
   validate  Validate if <version> follows the SEMVER pattern (see <version>
             definition). Print 'valid' to stdout if the version is valid, otherwise
@@ -124,6 +134,8 @@ Basic bumping operations
     $ semver bump patch 1.0.0
     1.0.1
     $ semver bump prerel rc.1 1.0.1
+    1.0.1-rc.1
+    $ semver bump prerelease rc.1 1.0.1
     1.0.1-rc.1
     $ semver bump prerel rc.. 1.2.0-beta2
     1.2.0-rc.1
@@ -169,6 +181,8 @@ Extract version part
     $ semver get major 1.2.3
     1
     $ semver get prerel 1.2.3-rc.4
+    rc.4
+    $ semver get prerelease 1.2.3-rc.4
     rc.4
     $ semver get prerel 1.2.3-alpha.4.5
     alpha.4.5
