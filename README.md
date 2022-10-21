@@ -33,14 +33,12 @@ chmod +x /usr/local/bin/semver
 
 # Prove it works
 semver --version
-# semver: 3.3.0
+# semver: 3.4.0
 ```
 
 Most likely, you will want to insure that the directory containing `semver` is on your `PATH`.
 
 See [installation alternatives](#installation-alternatives) below.
-
-For an example of how to use semver in a github-action, checkout the [ci action](.github/workflows/ci.yaml) in this repository.
 
 usage
 -----
@@ -216,7 +214,7 @@ however, alternative installation mechanisms might be desired. Two such methods 
 `asdf` is a tool version manager.
 See the [`asdf`](https://asdf-vm.com/) documentation explaining how to set up asdf, install plugins and tools, and how to set/select versions.
 
-The [semver plugin](https://github.com/mathew-fleisch/asdf-semver) handles the installation of the semver-tool. The README file contains an example installation.
+The [semver plugin](https://github.com/mathew-fleisch/asdf-semver) handles the installation of the semver-tool. The plugin README file contains an example installation.
 
 ### bpkg
 
@@ -229,3 +227,91 @@ The semver tool can be installed by running:
 bpkg install -g semver-tool
 ```
 
+### git
+
+Clone this repo (or download a specific release). Then, `make install` will (by default--this can be changed) install `semver` in `/usr/local/bin`.
+
+developing semver
+-----------------
+
+We welcome anyone wishing to contribute to `semver`.  Contributions can be new functionality, bug fixes, improvements to documentation, examples of usage (gists).
+
+This is a small and rather simple tool: only one source file!  So, it's not too hard to get started.  A good starting place might be looking at the open issues.
+
+Of course, submitting issues without being an active contributor is fine too.  Just be aware that issues that basically ask for someone to add something usually don't get much traction: it's always good to explain why it's a good idea,
+how you would use it (i.e. your use-case), how other alternatives are not as good.
+
+For a small project, there is a bit of rigor:
+
+- Kick off a potential contribution by submitting an issue.  It should solicit comments.  Proposing a path forward is always good.  Issues are often an "intention to submit a pull request".
+- Being a semantic versioning tool, we are sort of sensitive to breaking changes, compatibility.  Consistency is (almost) never a bad thing.
+- Tests are expected.  We even test documentation.
+- Commit messages should explain what was changed, why, design choices.
+- Readable code--including comments, consistent formatting, reasonable names--along with good commit messages makes
+reviewing work a pleasure.  It also means that new contributors can ramp up quickly and old folks can sleep,
+wake up years later, and still catch up.
+- We follow the usual Pull Request scheme. If you've submitted an issue (or commented on an existing one)
+and gotten positive feedback on a proposed direction, then getting your PR accepted should be smooth.
+Your PR should reference the issue(s) and indicate which issues it would close.
+A PR out of the blue is generally a waste of everyone's time.
+
+## the development environment
+
+Once you have cloned the project, you have one main source file to work on: a bash script in `src/semver`.
+Use your favorite editor or IDE.  The basic cycle is "hack-test-hack".
+Of course, test driven developement works just fine here: write failing tests in `test` and then get them to pass.
+Might as well: you will need to write that test sooner or later.
+
+Oh, you might not be working on the `semver` script itself: you might be working on documentation (written in MarkDown) or the Makefile, or maybe the CI workflow (`yaml`).  But still, pretty simple stuff.
+
+We use the [`bats`](https://github.com/bats-core/bats-core) testing framework.  It's pretty easy and still in `bash`.
+
+We also use [`shellcheck`](https://github.com/koalaman/shellcheck) to "lint" our shell scripts. Your changes need to come through clean.
+
+A custom test tool `test/documentation-test` makes sure that the examples in this REAME file are correct.
+
+All the tests can be run via `make`.  This same Makefile is used for CI testing (GitHub Actions) when a PR is submitted.
+
+### setting up test tools
+
+One way to look at the testing environment is the following sequence of scenarios:
+
+1. I use the test tools by hand on a specific change or test I'm working on.
+So, I'll need to install these tools in my work environment.  Before starting work, I check that
+the tools are set up correctly by running `make test-local`.  Everything should pass.
+
+2. When my stuff works, and/or to make sure nothing else broke, I run `make test-local` The complete test suite
+is identical to the test suite run automatically when I submit a pull request.  Except, except ... maybe
+I did not install the version of the test tool used in CI.  I can check the tool version by looking
+in the `DEPENDENCIES` file.  Of course, maybe it doesn't matter or maybe I'm exploring moving to
+a different test tool version: I *want* the local version to differ from the "stable" version!
+
+3. When I'm ready to submit a PR and so as to avoid the embarrasment of failing the CI workflow, I can run
+`make test-stable`.  This runs the same tests as above, but uses currated Docker images of the test
+tools: the same ones that the CI workflow will use.  Of course, I don't *have* to run this and it
+requires that I have Docker installed, configured, and running.  On the other hand, once I have Docker
+available, I don't strickly have to even install the test tools in my environment.  I can just
+run the tests via Docker and/or via the Makefile. It's user choice.
+
+4. When my pull request is sent, GitHub will kick off a workflow and `make test-stable` will be run.  If this
+fails, it is most likely something about configuring the CI workflow or GitHub projects
+(or `make` versions?) ... not because my code is failing the tests.  "It's not my fault!"
+
+This can all be summarized as:
+
+1. Test by hand.
+2. Run the test suite locally.
+3. Run the test suite using the stable environment.
+4. Let GitHub Actions run the test suite using the stable environment.
+
+### a note about dev environments
+
+It is almost inescapable that developers have to understand and manage their environments, and this
+can be a pain ... even for small projects.  And it is often a source of subtle errors.  If everything
+was "auto-magic", "batteries included"; then who--if not the dev's--is going to do the work to
+provide the batteries and magic?
+
+But there are helpers available.  One of them mentioned above is [`asdf`](https://asdf-vm.com/).
+Plugins for `bats` and `shellcheck` are available meaning that you can use `asdf` to set up your
+`semver-tool` test environment as you wish: the current stable versions, exploratory versions, or
+surely one day the next stable versions.
