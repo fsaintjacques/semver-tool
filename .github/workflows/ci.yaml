@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - master
-      - issue_74
   pull_request:
     branches:
       - master
