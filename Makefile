@@ -1,19 +1,86 @@
+#	Mostly drives how 'semver' is tested.  Also has an 'install' target.
+#	N.B. 'semver' does not need to be built: it's simply an executable script.
+
+#	The default installation directory (see the 'install' target for more info)
 PREFIX ?= /usr/local
-ROOT ?= $(shell pwd)
 
-test: doc-test unit-test
+#	The full path name of the source code repository.  Used for "bind mounts" in
+#	Docker
+SRC ?= $(shell pwd)
 
-doc-test:
-	test/documentation-test
+#	rule #1: don't hardcode; define it once in this file
+include DEPENDENCIES
 
-unit-test:
-	docker run --rm -v "${ROOT}:/mnt" -w /mnt bats/bats:1.6.0 test
+#	these definitions are common to local/developer and automated testing
+lint_semver_args = --shell=bash src/semver
+lint_doctest_args = --shell=bash test/documentation-test
+test_semver_args = test
+test_doctest_args = test/documentation-test
 
+#	"semver" and "help" -- default target explains what's going on
+semver:
+	@echo Nothing to make: semver in src/semver is an executable script
+	@echo Run \"make help\" for more details
+
+help:	semver
+	@echo
+	@echo \"make test-stable\" runs all tests in well defined Docker environments
+	@echo \"make test-local\" runs all tests assuming test tools are locally installed
+	@echo
+	@echo \"make install\" installs \'semver\' to ${DESTDIR}${PREFIX}/bin
+	@echo 
+	@echo See the Makefile and README for even more details
+
+#	"test-stable" relies on well defined and stable test tools.
+#	It is run by GitHub actions.
+#	"test-stable" can be run locally as long as Docker is installed and up.
+#	This might be a good idea before pushing to GitHub or generating a PR.
+test-stable: lint unit-test doc-test 
+
+#	"test-local" assumes that the test tools (bats, shellcheck, bash) are installed.
+#	Unlike "test-stable", one is free to install any version of the tools and
+#	by any method: useful for development and exploring new versions. "asdf" might
+#	be the right way to set up your local dev. environment.
+test-local: lint-local unit-test-local doc-test-local 
+
+
+#	"lint" tests check shell scripts for dubious code
 lint:
-	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck --shell=bash src/semver
-	docker run --rm -v ${ROOT}:/mnt koalaman/shellcheck --shell=bash test/documentation-test
+	docker run --rm -v "${SRC}:/semver-tool:ro" -w /semver-tool \
+		${shellcheck_docker_image}:${shellcheck_image_tag} ${lint_semver_args}
+	docker run --rm -v "${SRC}:/semver-tool:ro" -w /semver-tool \
+		${shellcheck_docker_image}:${shellcheck_image_tag} ${lint_doctest_args}
 
+#	the main functional/unit tests for 'semver'
+unit-test:
+	docker run --rm -v "${SRC}:/semver-tool:ro" -w /semver-tool \
+		${bats_docker_image}:${bats_image_tag} ${test_semver_args}
+
+#	tests that the README documentation conforms to 'semver' behaviour
+doc-test:
+	docker run --rm -v "${SRC}:/semver-tool:ro" -w /semver-tool \
+		${bash_docker_image}:${bash_image_tag} ${test_doctest_args}
+
+
+#	"lint" tests check shell scripts for dubious code
+lint-local:
+	shellcheck ${lint_semver_args}
+	shellcheck ${lint_doctest_args}
+
+#	the main functional/unit tests for 'semver'
+unit-test-local:
+	bats ${test_semver_args}
+
+#	tests that the README documentation conforms to 'semver' behaviour
+doc-test-local:
+	bash ${test_doctest_args}
+
+#
+#	"install" copies the script to the desired installation location.  Note that
+#	if 'DESTDIR' is not set (via, perhaps, the environment), only the 'PREFIX'
+#	is used (defined above, but can be overridden).  Without 'DESTDIR',
+#	the installation is to a global path (e.g. /usr/local)
 install:
 	install src/semver ${DESTDIR}${PREFIX}/bin
 
-.PHONY: doc-test unit-test install lint
+.PHONY: lint unit-test doc-test lint lint-local unit-test-local doc-test-local install semver help
