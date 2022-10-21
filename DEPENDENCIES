@@ -1,0 +1,20 @@
+#	This file describes and defines the dependencies used for testing.
+#	The file is "included" by 'make' and is mostly used to identify docker images.
+#	The syntax is also accepted by the shell and so could be used in other contexts.
+#	This should be the single place for specifying dependencies.
+
+#	'bats' is used for functional testing of semver (called "unit-tests")
+bats_github=bats-core/bats-core
+bats_version=v1.8.0
+bats_docker_image=bats/bats
+bats_image_tag=1.8.0
+
+#	'shellcheck' lints both semver and the doctest script
+shellcheck_github=koalaman/shellcheck
+shellcheck_version=0.8.0
+shellcheck_docker_image=koalaman/shellcheck
+shellcheck_image_tag=v0.8.0
+
+#	'bash' is used here to run the doctest. This is *not* a dependency of semver itself.
+bash_docker_image=bash
+bash_image_tag=5.2
