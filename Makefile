@@ -8,8 +8,39 @@ PREFIX ?= /usr/local
 #	Docker
 SRC ?= $(shell pwd)
 
+#	The current version of the project, taken from the source code
+VERSION ?= $(shell cat ${SRC}/src/semver | grep 'PROG_VERSION=' | cut -d '"' -f 2)
+
+#   The Docker Hub namespace of the project, defaulting to 'fsaintjacques'
+VENDOR ?= fsaintjacques
+
+#   The current date and time, in UTC, in ISO 8601 format
+TODAY ?= $(shell date -u +'%Y-%m-%dT%H:%M:%SZ')
+
+#	The current commit hash
+COMMIT ?= $(shell git rev-parse HEAD)
+
 #	rule #1: don't hardcode; define it once in this file
 include DEPENDENCIES
+
+#	"build" builds the Docker image used for the project
+build:
+	docker build \
+		--no-cache \
+		--build-arg BUILD_VERSION="${VERSION}" \
+		--build-arg BUILD_DATE="${TODAY}" \
+		--build-arg SCHEMA_NAME=semver-tool \
+		--build-arg SCHEMA_VENDOR="${VENDOR}" \
+		--build-arg BUILD_VCS_REF="${COMMIT}" \
+		--build-arg BUILD_VCS_URL="https://github.com/${VENDOR}/semver-tool" \
+		-t "${VENDOR}/semver-tool:${VERSION}" \
+		.
+
+#	"push" pushes the Docker image to Docker Hub
+push:
+	echo "${DOCKER_PASSWORD}"" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+	docker push "${VENDOR}/semver-tool:${VERSION}"
+	docker push "${VENDOR}/semver-tool:latest"
 
 #	these definitions are common to local/developer and automated testing
 lint_semver_args = --shell=bash src/semver
