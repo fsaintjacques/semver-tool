@@ -40,6 +40,14 @@ Most likely, you will want to insure that the directory containing `semver` is o
 
 See [installation alternatives](#installation-alternatives) below.
 
+Or you can use it with Docker:
+  
+```bash
+# Prove it works
+docker run --rm fsaintjacques/semver-tool:latest semver --version
+# semver: 3.4.0
+```
+
 usage
 -----
 
